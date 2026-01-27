@@ -15,7 +15,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // High-speed bulk insertion (single query)
+//        User::factory()->count(100)->insert();
+
+        $this->call(UsersSeeder::class);
 
         User::factory()->create([
             'name' => 'Test User',
