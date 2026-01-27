@@ -1,5 +1,5 @@
 services:
-  # Aapki Laravel App
+  # 1. Laravel PHP-FPM Application
   app:
     build: .
     container_name: laravel_app
@@ -8,7 +8,7 @@ services:
     networks:
       - laravel_net
 
-  # Web Server (Nginx)
+  # 2. Web Server (Nginx)
   nginx:
     image: nginx:trixie-perl
     container_name: laravel_nginx
@@ -22,7 +22,7 @@ services:
     networks:
       - laravel_net
 
-  # Database
+  # 3. Database (MySQL)
   db:
     image: mysql:latest
     container_name: laravel_db
@@ -31,17 +31,23 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: laravel_db
+    volumes:
+      - mysql_data:/var/lib/mysql
     networks:
       - laravel_net
 
-  # Redis
+  # 4. Cache & Queue (Redis)
   redis:
     image: redis:latest
     container_name: laravel_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
     networks:
       - laravel_net
 
-  # Mailpit
+  # 5. Email Testing (Mailpit)
   mailpit:
     image: axllent/mailpit:latest
     container_name: laravel_mail
@@ -50,6 +56,16 @@ services:
     networks:
       - laravel_net
 
+# ---------------------------------------------------------
+# NETWORKS: Containers ke aapas mein baat karne ke liye
+# ---------------------------------------------------------
 networks:
   laravel_net:
     driver: bridge
+
+# ---------------------------------------------------------
+# VOLUMES: Named volumes ko yahan declare karna ZAROORI hai
+# ---------------------------------------------------------
+volumes:
+  mysql_data:
+  redis_data:
