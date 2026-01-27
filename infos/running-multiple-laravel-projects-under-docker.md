@@ -6,13 +6,15 @@ This guide provides a deep dive into isolating multiple Laravel environments on 
 
 ## 🏗️ 1. Architecture Overview
 
-Each Laravel project runs in its own isolated network. To avoid "Address already in use" errors, we must ensure that no two containers attempt to bind to the same **Host Port** (the port on your Windows machine).
+Each Laravel project runs in its own isolated network. To avoid "Address already in use" errors, we must ensure that no
+two containers attempt to bind to the same **Host Port** (the port on your Windows machine).
 
 ---
 
 ## 🔑 2. The "Rule of Three" for New Projects
 
-When cloning or starting a new project (e.g., `project-two`), you **must** unique-ify three things in your `docker-compose.yml`:
+When cloning or starting a new project (e.g., `project-two`), you **must** unique-ify three things in your
+`docker-compose.yml`:
 
 ### A. Service Container Names
 
@@ -124,21 +126,22 @@ docker exec p2_php_app php artisan migrate
 
 To connect your Windows GUI tools to the Docker Database:
 
-| Setting | Value | Note |
-| --- | --- | --- |
-| **Connection Type** | MySQL |  |
-| **Host** | `127.0.0.1` | Always use IP to bypass DNS issues |
-| **Port** | `3307` | Use the **Left-side** port from your YAML |
-| **User/Pass** | `root` / `root` | As defined in `environment` section |
-| **Driver Property** | `allowPublicKeyRetrieval=true` | Required for MySQL 8+ |
+| Setting             | Value                          | Note                                      |
+|---------------------|--------------------------------|-------------------------------------------|
+| **Connection Type** | MySQL                          |                                           |
+| **Host**            | `127.0.0.1`                    | Always use IP to bypass DNS issues        |
+| **Port**            | `3307`                         | Use the **Left-side** port from your YAML |
+| **User/Pass**       | `root` / `root`                | As defined in `environment` section       |
+| **Driver Property** | `allowPublicKeyRetrieval=true` | Required for MySQL 8+                     |
 
 ---
 
 ## 🛠️ 6. Common Troubleshooting
 
-* **Zombie Containers:** If you see `Bind for 0.0.0.0:3306 failed`, another project or a local MySQL is running. Run `docker ps` to find it and `docker stop <id>` to kill it.
+* **Zombie Containers:** If you see `Bind for 0.0.0.0:3306 failed`, another project or a local MySQL is running. Run
+  `docker ps` to find it and `docker stop <id>` to kill it.
 * **Permissions:** If Laravel logs show "Permission Denied", run:
-`docker exec p2_php_app chmod -R 777 storage bootstrap/cache`
+  `docker exec p2_php_app chmod -R 777 storage bootstrap/cache`
 * **Network Cleanup:** If you have too many unused networks:
-`docker network prune`
+  `docker network prune`
 
