@@ -101,7 +101,7 @@ class TodoController extends Controller
     public function statistics(Request $request): JsonResponse
     {
         $user = $request->user();
-        
+
         $stats = [
             'total' => $user->todos()->count(),
             'completed' => $user->todos()->completed()->count(),
