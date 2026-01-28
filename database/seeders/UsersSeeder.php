@@ -34,12 +34,10 @@ class UsersSeeder extends Seeder
                     ->map(function ($user) use ($currentDateTime) {
                         $array = $user->toArray();
 
-                        // MySQL ke liye date format fix karein
                         if (isset($array['email_verified_at'])) {
                             $array['email_verified_at'] = $user->email_verified_at->format('Y-m-d H:i:s');
                         }
 
-                        // Agar created_at/updated_at bhi issue karein toh unhein bhi fix karein
                         $array['created_at'] = $currentDateTime;
                         $array['updated_at'] = $currentDateTime;
 
