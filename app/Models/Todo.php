@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Http\Request;
 
 class Todo extends Model {
     use HasFactory;
@@ -44,7 +45,7 @@ class Todo extends Model {
             ->where('due_date', '>=', now());
     }
 
-    public function scopeWithFilters($query, $request) {
+    public function scopeWithFilters($query, Request $request) {
         if ($request->has('status')) {
             if ($request->status === 'completed') {
                 $query->completed();
