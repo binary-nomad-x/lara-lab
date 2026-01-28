@@ -21,7 +21,7 @@ class BootupAppCommand extends Command
             $this->warn('⚠️  REBOOT MODE ACTIVATED ⚠️');
 
             // Safety Confirmation
-            if (!$this->confirm('💣  This will WIPE the database and re-seed it. Are you sure?', false)) {
+            if (!$this->confirm('💣  This will WIPE the database and re-seed it. Are you sure?')) {
                 $this->comment('Operation cancelled by user.');
                 return self::SUCCESS;
             }
