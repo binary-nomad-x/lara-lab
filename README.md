@@ -1,6 +1,8 @@
 # 🚀 LaraNexus: The Ultimate Enterprise SaaS Boilerplate
 
-**LaraNexus** is a high-performance, Dockerized Laravel ecosystem designed for building scalable real-world applications. This project serves as a "Mega-Lab" for experimenting with advanced software architecture, including Multi-Channel Notifications (Novu), Two-Way SMS Communication, and high-scale Background Processing.
+**LaraNexus** is a high-performance, Dockerized Laravel ecosystem designed for building scalable real-world
+applications. This project serves as a "Mega-Lab" for experimenting with advanced software architecture, including
+Multi-Channel Notifications (Novu), Two-Way SMS Communication, and high-scale Background Processing.
 
 ---
 
@@ -85,11 +87,11 @@ Utilizing **Redis Queues** to handle time-consuming tasks:
 
 For external GUI tools (DataGrip, TablePlus), use the following credentials:
 
-| Service | Host | Port (Host) | Username | Password |
-| --- | --- | --- | --- | --- |
-| **MySQL** | `127.0.0.1` | `3306` | `root` | `root` |
-| **Redis** | `127.0.0.1` | `6379` | `null` | `null` |
-| **Mailpit** | `127.0.0.1` | `8025` | `(Web UI)` | `n/a` |
+| Service     | Host        | Port (Host) | Username   | Password |
+|-------------|-------------|-------------|------------|----------|
+| **MySQL**   | `127.0.0.1` | `3306`      | `root`     | `root`   |
+| **Redis**   | `127.0.0.1` | `6379`      | `null`     | `null`   |
+| **Mailpit** | `127.0.0.1` | `8025`      | `(Web UI)` | `n/a`    |
 
 ---
 
