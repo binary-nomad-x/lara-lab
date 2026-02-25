@@ -141,3 +141,11 @@ http://localhost:8000
 
 Agar aap chahen to main aap ko **complete production-ready Laravel Docker setup** bhi bana kar de sakta hoon (
 optimized + faster + smaller image).
+
+# Owner badalne ke liye
+docker compose exec app chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+
+# Write permission dene ke liye
+docker compose exec app chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+
+docker compose exec app chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
