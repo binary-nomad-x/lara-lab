@@ -1,238 +1,206 @@
-# 🚀 Project Title: **Nexus EIAMS**
+# 📄 Comprehensive Requirements Specification
 
-### *Next-Gen Enterprise Inventory & Analytics Management System*
+## **Project Name:** Nexus EIAMS (Enterprise Inventory & Analytics Management System)
 
-> **Tagline:** A Cloud-Native, AI-Enhanced, Multi-Tenant SaaS Platform designed for Global Supply Chain Dominance.
-
----
-
-# 🌟 New "Killer" Features Added
-
-### 1. 🤖 AI & Predictive Intelligence Module
-
-*Don't just show data; predict the future.*
-
-* **Demand Forecasting:** Use Python (via Laravel-Python bridge) or PHP ML libraries to analyze historical sales and
-  predict stock needs for the next 30/60/90 days.
-* **Smart Reordering:** Auto-generate Purchase Orders when stock hits a dynamic threshold based on seasonality, not just
-  static numbers.
-* **Anomaly Detection:** Alert admins immediately if stock movements deviate from normal patterns (potential theft or
-  system error).
-* **Dynamic Pricing Engine:** Suggest price adjustments based on competitor trends (simulated) and inventory age.
-
-### 2. 📱 Offline-First PWA (Progressive Web App)
-
-*Warehouses often have poor Wi-Fi. The app must work offline.*
-
-* **Service Workers:** Cache critical assets and API responses.
-* **Local Database (IndexedDB):** Store transactions locally when offline.
-* **Sync Engine:** A robust background job that syncs local changes to the server once connectivity is restored,
-  handling conflict resolution (Last-Write-Wins or Manual Merge).
-* **Barcode Scanner:** Native camera integration via PWA for scanning items without external hardware.
-
-### 3. 🌍 Globalization & Multi-Currency Engine
-
-*For enterprises operating across borders.*
-
-* **Multi-Currency Support:** Store base currency per tenant, but allow transactions in USD, EUR, GBP, etc.
-* **Real-Time FX Rates:** Cron job to fetch daily exchange rates (via API) and revaluate inventory value.
-* **Multi-Language (i18n):** Dynamic translation switching (JSON based) for UI labels.
-* **Tax Compliance:** Configurable tax rules per region (VAT, GST, Sales Tax).
-
-### 4. 🔗 Marketplace & ERP Integrations Hub
-
-*Enterprises don't live in silos.*
-
-* **Webhook System:** Allow tenants to configure webhooks for events (e.g., `order.created`, `stock.low`).
-* **Pre-built Connectors:** Mock integrations for Shopify, WooCommerce, Amazon Seller Central, and QuickBooks/Xero.
-* **API Key Management:** Tenant-specific API keys with scoped permissions.
-
-### 5. 📸 Media & Asset Management
-
-*Visual inventory management.*
-
-* **S3 Compatible Storage:** Upload product images, invoices, and supplier contracts to AWS S3 / MinIO.
-* **Image Optimization:** Automatic resizing and WebP conversion using Laravel Image Processing.
-* **Document Versioning:** Track changes to uploaded contracts/invoices.
-
-### 6. 🛡️ Advanced Audit & Compliance Suite
-
-*Beyond simple logging.*
-
-* **Immutable Audit Trail:** Write critical financial logs to an append-only table (or separate DB) that cannot be
-  edited/deleted even by Super Admins.
-* **User Session Management:** View active sessions, force logout devices, and see login geography (IP Geolocation).
-* **GDPR Tools:** "Export My Data" and "Right to be Forgotten" automated jobs for tenant users.
-
-### 7. 💬 Real-Time Collaboration
-
-* **WebSockets (Laravel Reverb/Pusher):**
-* Live notifications for low stock.
-* Real-time chat between Warehouse Staff and Managers regarding specific orders.
-* Live dashboard updates (no page refresh needed).
+**Version:** 2.0 (Enterprise Grade)  
+**Type:** Multi-Tenant SaaS Platform  
+**Target Audience:** Global Enterprises, Supply Chain Managers, Logistics Providers  
+**Tech Stack:** Laravel 11+, PHP 8.3, PostgreSQL 16, Redis 7, Docker, Vue.js/React (PWA), Python (AI Sidecar)
 
 ---
 
-# 🏗 Updated Architecture Enhancements
+## 1. 🎯 Executive Summary
 
-### 🧩 Domain-Driven Design (DDD) Lite
-
-Instead of just MVC, organize code by **Domains**:
-```text
-app/
-├── Domains/
-│   ├── Inventory/
-│   │   ├── Actions/ (CreateProduct, AdjustStock)
-│   │   ├── Models/
-│   │   ├── Rules/ (StockValidationRule)
-│   │   └── Events/
-│   ├── Finance/
-│   ├── Ordering/
-│   └── Analytics/
-├── Infrastructure/ (External APIs, Payment Gateways)
-└── UI/ (Controllers, Requests, Resources)
-```
-
-### ⚡ Event Sourcing (Optional Advanced Feature)
-
-For the **Finance Module**, consider storing state changes as a sequence of events rather than just current state. This
-allows perfect reconstruction of ledger history.
-
-### 🔍 Observability Stack
-
-* **OpenTelemetry:** Trace requests across Microservices/Queues.
-* **Health Checks:** Dedicated endpoint `/api/health` checking DB, Redis, Queue, and Disk space.
-* **Error Tracking:** Integration ready for Sentry or Bugsnag.
+**Nexus EIAMS** is a cloud-native, data-intensive SaaS platform designed to solve complex supply chain challenges for
+multi-location enterprises. Unlike standard inventory tools, Nexus combines **offline-first capabilities**, **AI-driven
+demand forecasting**, **global multi-currency finance**, and **real-time collaboration** into a single unified system.
+The architecture is built for scale, capable of handling **100M+ records** with sub-100ms query performance through
+advanced database partitioning and read/write splitting.
 
 ---
 
-# 🗄 Enhanced Database Strategy
+## 2. 🏗 System Architecture & Design Patterns
 
-### Partitioning
+### 2.1 Architectural Style
 
-* **Time-Series Partitioning:** Partition the `stock_movements` and `audit_logs` tables by month/year in PostgreSQL to
-  keep query speeds instant even with 100M+ rows.
+* **Domain-Driven Design (DDD):** Codebase organized by business domains (`Inventory`, `Finance`, `Ordering`,
+  `Analytics`) rather than technical layers.
+* **Multi-Tenancy:** Database-level isolation using `tenant_id` scoping with optional schema separation for enterprise
+  clients.
+* **Event-Driven Architecture:** Decoupled modules communicating via Laravel Events/Listeners and Redis queues.
+* **Offline-First PWA:** Client-side logic handles data persistence (IndexedDB) and synchronization when connectivity is
+  restored.
 
-### Read/Write Splitting
+### 2.2 Infrastructure Topology
 
-* Configure Laravel to write to the **Primary** DB node and read analytics/dashboard data from **Replica** nodes to
-  prevent locking issues during heavy reporting.
-
-### Soft Deletes with Scope
-
-* Global scope to handle soft deletes automatically, but allow "Hard Delete" only for Super Admins after a retention
-  period (e.g., 7 years for finance).
-
----
-
-# 🧪 Advanced Testing Strategy (QA)
-
-* **Load Testing:** Use **k6** or **Apache JMeter** scripts to simulate 1,000 concurrent users placing orders. Assert
-  that response time stays < 200ms.
-* **Chaos Engineering:** Simulate Redis failure or DB latency in tests to ensure the app degrades gracefully (circuit
-  breakers).
-* **Contract Testing:** Ensure API responses match the Swagger definition strictly.
-* **Visual Regression:** Snapshot testing for key dashboard components.
+* **Containerization:** Full Docker Compose stack (App, Nginx, Postgres, Redis, MinIO, Meilisearch, AI-Worker).
+* **Database Strategy:**
+* **Primary Node:** Handles all writes and transactional reads.
+* **Replica Nodes:** Dedicated to heavy analytics and reporting queries.
+* **Partitioning:** Time-series partitioning on `stock_movements`, `audit_logs`, and `orders` tables (monthly/yearly).
+* **Object Storage:** S3-compatible (MinIO/AWS) for media, invoices, and documents with signed URL access.
+* **Search Engine:** Meilisearch/Elasticsearch for full-text product/search capabilities.
 
 ---
 
-# 📦 Updated Docker Compose Services
+## 3. 🌟 Functional Requirements
 
-Add these to your stack for the new features:
+### 3.1 Module: Core & Authentication
 
-```yaml
-services:
-  # Existing...
-  app: ...
-  nginx: ...
-  postgres: ...
-  redis: ...
+* **Multi-Tenant Onboarding:** Self-service signup with subdomain or path-based routing.
+* **RBAC (Role-Based Access Control):** Granular permissions using Spatie Laravel Permission.
+* *Roles:* Super Admin, Tenant Admin, Manager, Accountant, Warehouse Staff, Auditor.
+* **Security:** 2FA (TOTP), Session Management (force logout), IP Geolocation logging, Passwordless login options.
+* **GDPR Compliance:** Automated "Export Data" and "Right to be Forgotten" workflows.
 
-  # NEW SERVICES
-  minio: # S3 Compatible Object Storage
-    image: minio/minio
+### 3.2 Module: Advanced Inventory Management
 
-  meilisearch: # Faster Full-text search
-    image: getmeili/meilisearch
+* **Product Hierarchy:** Support for Categories (nested), Products, Variants (SKU auto-generation), and Bundles.
+* **Stock Logic:**
+* Multi-warehouse support with bin/shelf location tracking.
+* Batch/Lot tracking and Expiry date management (FEFO/FIFO/LIFO valuation).
+* Real-time stock reservation during checkout.
+* **Hardware Integration:** Native PWA Barcode/QR scanner using device camera.
+* **Media Management:** Multi-image support per product with automatic WebP conversion and CDN delivery.
 
-  mailhog: # Already there, but ensure SMTP config
+### 3.3 Module: Order Lifecycle & Sales
 
-  # Optional: Python sidecar for AI calculations
-  ai-worker:
-    build: ./ai-service
-    depends_on:
-      - redis
-```
+* **Order Processing:** Full lifecycle (Draft → Confirmed → Picking → Packed → Shipped → Delivered → Returned).
+* **Complex Pricing:** Support for tiered pricing, customer-specific discounts, coupon codes, and dynamic tax rules (
+  VAT/GST/Sales Tax).
+* **Partial Fulfillment:** Split shipments across multiple warehouses.
+* **Returns (RMA):** Automated return merchandise authorization with restocking logic and refund processing.
+
+### 3.4 Module: Global Finance & Ledger
+
+* **Double-Entry Bookkeeping:** Immutable journal entries for every financial transaction.
+* **Multi-Currency Engine:**
+* Base currency per tenant; transaction currency per order.
+* Daily FX rate synchronization via external API.
+* Realized/Unrealized gain/loss calculation on currency fluctuation.
+* **Reporting:** Auto-generated P&L, Balance Sheet, Cash Flow, and Aged Receivables/Payables.
+* **Invoicing:** Server-side PDF generation (DomPDF/Snappy) with email dispatch via queues.
+
+### 3.5 Module: AI & Predictive Intelligence
+
+* **Demand Forecasting:** Python-based microservice analyzing historical sales seasonality to predict stock
+  requirements (30/60/90 days).
+* **Smart Reordering:** Auto-draft Purchase Orders when projected stock hits dynamic safety levels.
+* **Anomaly Detection:** Real-time alerts on unusual stock movements (potential shrinkage/theft).
+* **Dynamic Pricing Suggestions:** Algorithmic price adjustment recommendations based on stock age and turnover rates.
+
+### 3.6 Module: Offline-First Sync Engine
+
+* **Local Persistence:** Critical data cached in IndexedDB for offline access.
+* **Queue & Replay:** Actions performed offline are queued locally and replayed to the server upon reconnection.
+* **Conflict Resolution:**
+* *Strategy:* Last-Write-Wins for simple fields; Manual Merge UI for complex inventory adjustments.
+* *Audit:* Every sync event is logged with device ID and timestamp.
+
+### 3.7 Module: Integrations & Webhooks
+
+* **Webhook Hub:** Tenants can configure outgoing webhooks for events (`order.created`, `stock.low`, `payment.failed`).
+* **Marketplace Connectors:** Mock adapters for Shopify, WooCommerce, Amazon, and QuickBooks/Xero (demonstrating
+  integration patterns).
+* **API Gateway:** RESTful API with versioning (`/api/v1`), rate limiting, and scoped API keys for third-party
+  developers.
+
+### 3.8 Module: Real-Time Collaboration
+
+* **Live Dashboard:** WebSocket-driven updates for sales counters and low-stock alerts (no refresh needed).
+* **Contextual Chat:** Real-time messaging between Warehouse Staff and Managers attached to specific Order IDs.
+* **Notification Center:** In-app and Email notifications for critical workflow events.
 
 ---
 
-# 📅 Revised Roadmap (The "Pro" Path)
+## 4. 🗄 Database Schema Strategy
 
-| Phase       | Focus                   | Key Deliverables                                                       |
-|:------------|:------------------------|:-----------------------------------------------------------------------|
-| **Phase 1** | **Core Foundation**     | Multi-tenancy, RBAC, Auth, Basic CRUD, Docker Setup.                   |
-| **Phase 2** | **Inventory Logic**     | Warehouses, Variants, Batch/Expiry, Barcode Scanning, S3 Images.       |
-| **Phase 3** | **Order & Finance**     | Order Lifecycle, Double-Entry Ledger, Multi-currency, Invoicing (PDF). |
-| **Phase 4** | **Performance & Scale** | Queue Jobs, Redis Caching, DB Partitioning, Horizon Dashboard.         |
-| **Phase 5** | **Offline & Mobile**    | PWA Implementation, Service Workers, Sync Logic, Camera Scanner.       |
-| **Phase 6** | **Intelligence**        | AI Forecasting, Predictive Reordering, Advanced Analytics Charts.      |
-| **Phase 7** | **Integration**         | Webhooks, API Keys, Mock Marketplace Connectors, Swagger Docs.         |
-| **Phase 8** | **Polish & Security**   | Load Testing, Audit Trails, 2FA, GDPR Tools, CI/CD Pipeline.           |
+| Table Category | Key Tables                                             | Optimization Strategy                                                 |
+|:---------------|:-------------------------------------------------------|:----------------------------------------------------------------------|
+| **Tenancy**    | `tenants`, `domains`, `subscriptions`                  | Indexed `tenant_id` on all global tables.                             |
+| **Inventory**  | `products`, `variants`, `stock_movements`, `batches`   | **Partitioned** by date; Composite indexes on `(warehouse_id, sku)`.  |
+| **Orders**     | `orders`, `order_items`, `shipments`, `returns`        | Foreign keys with cascade; JSONB columns for flexible snapshot data.  |
+| **Finance**    | `ledgers`, `journal_entries`, `accounts`, `currencies` | **Immutable** append-only structure; Decimal precision (19,4).        |
+| **Audit**      | `audit_logs`, `user_sessions`, `activity_history`      | **Partitioned**; Write-heavy optimization; Archival policy (7 years). |
+| **Sync**       | `sync_queues`, `conflict_logs`, `device_registry`      | High-write throughput; TTL for temporary sync tokens.                 |
 
 ---
 
-# 💼 How to Sell This on Upwork/Portfolio
+## 5. ⚙️ Non-Functional Requirements (NFRs)
 
-When presenting this, don't just say "I built an inventory system." Say:
+### 5.1 Performance
 
-> "I architected **Nexus EIAMS**, a high-scale SaaS platform capable of handling **millions of SKUs** and **global
-multi-currency transactions**.
->
-> **Key Technical Achievements:**
-> * Implemented **Offline-First PWA architecture** ensuring 100% uptime for warehouse staff even with zero internet.
-> * Built a **Predictive AI Engine** reducing stockouts by 30% through demand forecasting.
-> * Designed a **Partitioned PostgreSQL schema** maintaining sub-100ms query times on datasets exceeding 50M rows.
-> * Engineered a **Conflict-Resolution Sync System** for distributed data entry.
-> * Secured financial data with **Immutable Audit Logs** and Role-Based Data Isolation.
->
-> This isn't just a website; it's an enterprise-grade infrastructure solution."
+* **Latency:** API response time < 200ms for 95th percentile under load.
+* **Throughput:** Capable of ingesting 1,000+ orders per minute via queue workers.
+* **Scalability:** Horizontal scaling of Queue Workers and App Containers via Kubernetes/Docker Swarm ready.
+* **Data Volume:** Tested and optimized for datasets exceeding **50 Million rows**.
+
+### 5.2 Reliability & Availability
+
+* **Uptime:** Target 99.9% availability.
+* **Resilience:** Circuit breakers on external API calls (FX rates, Email, Storage).
+* **Disaster Recovery:** Automated daily backups with Point-in-Time Recovery (PITR) for PostgreSQL.
+
+### 5.3 Security
+
+* **Data Isolation:** Strict middleware enforcement of `tenant_id` to prevent data leakage.
+* **Encryption:** Data at rest (DB encryption) and in transit (TLS 1.3).
+* **Auditability:** Every `CREATE`, `UPDATE`, `DELETE` action logged with `user_id`, `ip_address`, `payload_before`, and
+  `payload_after`.
+
+### 5.4 Observability
+
+* **Logging:** Centralized structured logging (JSON) compatible with ELK/Loki.
+* **Tracing:** OpenTelemetry integration for distributed tracing across App, Queue, and AI services.
+* **Metrics:** Prometheus/Grafana dashboards for Queue latency, DB connections, and Error rates.
 
 ---
 
-# 🎁 Bonus: Code Snippet Idea (The "Wow" Factor)
+## 6. 🧪 Testing & Quality Assurance Strategy
 
-**The Smart Sync Service (Conceptual)**
-Show you can handle complex logic like this:
+* **Unit Testing:** 90%+ coverage on Domain Logic, Services, and Rules (PHPUnit/Pest).
+* **Feature Testing:** End-to-end HTTP tests for all API endpoints and UI flows.
+* **Load Testing:** Scripts (k6/JMeter) simulating 1,000 concurrent users performing stock checks and order placements.
+* **Chaos Testing:** Automated failure injection (Redis down, DB latency) to verify graceful degradation.
+* **Contract Testing:** Ensuring API responses strictly adhere to Swagger/OpenAPI specifications.
+* **Visual Regression:** Automated screenshot comparison for critical dashboard components.
 
-```php
-// App/Services/Sync/OfflineSyncService.php
+---
 
-public function syncTenantData(Tenant $tenant, array $localChanges): SyncResult
-{
-    return DB::transaction(function () use ($tenant, $localChanges) {
-        $conflicts = [];
-        
-        foreach ($localChanges as $change) {
-            $serverRecord = Model::find($change['id']);
-            
-            // Conflict Detection: Did server change after local last_sync?
-            if ($serverRecord->updated_at > $change['last_known_server_time']) {
-                $conflicts[] = $this->resolveConflict($serverRecord, $change);
-                continue;
-            }
-            
-            // Apply Change
-            $serverRecord->update($change['data']);
-            
-            // Log for Audit
-            AuditLog::create([
-                'action' => 'sync_update',
-                'source' => 'offline_device',
-                'user_id' => $change['user_id']
-            ]);
-        }
-        
-        return new SyncResult(success: true, conflicts: $conflicts);
-    });
-}
-```
+## 7. 📦 Deployment & DevOps
+
+* **Container Orchestration:** Docker Compose for local/dev; Kubernetes manifests provided for production.
+* **CI/CD Pipeline:** GitHub Actions/GitLab CI running tests, linting, security scans (SAST), and auto-deployment.
+* **Environment Management:** Distinct configurations for Local, Staging, and Production with sealed secrets management.
+* **Monitoring Stack:** Pre-configured Prometheus, Grafana, and Sentry error tracking.
+
+---
+
+## 8. 📅 Implementation Roadmap
+
+| Phase  | Milestone              | Deliverables                                                              |
+|:-------|:-----------------------|:--------------------------------------------------------------------------|
+| **01** | **Foundation**         | Multi-tenancy, Auth, RBAC, Docker Stack, Base CI/CD.                      |
+| **02** | **Inventory Core**     | Product/Variant models, Stock logic, Barcode scanning, S3 integration.    |
+| **03** | **Commerce & Finance** | Order lifecycle, Double-entry ledger, Multi-currency, PDF Invoices.       |
+| **04** | **Scale & Perf**       | DB Partitioning, Read/Write splitting, Redis Caching, Queue optimization. |
+| **05** | **Offline PWA**        | Service Workers, IndexedDB sync, Conflict resolution logic.               |
+| **06** | **Intelligence**       | AI Forecasting service, Predictive reordering, Anomaly detection.         |
+| **07** | **Ecosystem**          | Webhooks, API Keys, Marketplace mocks, Swagger Docs.                      |
+| **08** | **Hardening**          | Load testing, Security audit, GDPR tools, Final Polish.                   |
+
+---
+
+## 9. 🏆 Success Criteria
+
+The project is considered successful when:
+
+1. It handles **1M+ seed data records** without performance degradation.
+2. The **Offline Sync** successfully resolves conflicts without data loss.
+3. **Financial Reports** balance perfectly to the penny across multiple currencies.
+4. The system passes **Load Tests** simulating high-concurrency Black Friday scenarios.
+5. The codebase adheres to **SOLID principles** and **Domain-Driven Design**, making it maintainable and extensible.
+
+---
+
+*This document serves as the single source of truth for the development, testing, and deployment of Nexus EIAMS.*
