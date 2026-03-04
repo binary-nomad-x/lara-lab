@@ -2,11 +2,12 @@
 
 namespace App\Http\Resources;
 
+use AllowDynamicProperties;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class TodoResource extends JsonResource
-{
+#[AllowDynamicProperties]
+class TodoResource extends JsonResource {
     public function toArray(Request $request): array
     {
         return [

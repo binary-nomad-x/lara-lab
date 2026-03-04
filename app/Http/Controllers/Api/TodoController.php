@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Todo\StoreTodoRequest;
@@ -101,7 +101,7 @@ class TodoController extends Controller
     public function statistics(Request $request): JsonResponse
     {
         $user = $request->user();
-        
+
         $stats = [
             'total' => $user->todos()->count(),
             'completed' => $user->todos()->completed()->count(),

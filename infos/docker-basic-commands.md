@@ -1,6 +1,7 @@
 # 🚀 Laravel Docker Environment: Daily Operations Guide
 
-Since PHP and Composer are not installed on your host machine, all operations must be routed through Docker containers. This guide outlines the essential commands and integration steps for your development tools.
+Since PHP and Composer are not installed on your host machine, all operations must be routed through Docker containers.
+This guide outlines the essential commands and integration steps for your development tools.
 
 ---
 
@@ -10,9 +11,12 @@ Since PHP and Composer are not installed on your host machine, all operations mu
 
 Use these commands to manage the lifecycle of your development environment:
 
-* **`docker-compose up -d`** Starts all services (PHP, MySQL, Nginx, etc.) in the background. Use this to begin your workday.
-* **`docker-compose stop`** Gracefully pauses running containers. Use this if you want to save system resources but keep the current state.
-* **`docker-compose down`** Stops and **removes** all containers and the internal network. Use this when you are finished with the project or need to reset the environment.
+* **`docker-compose up -d`** Starts all services (PHP, MySQL, Nginx, etc.) in the background. Use this to begin your
+  workday.
+* **`docker-compose stop`** Gracefully pauses running containers. Use this if you want to save system resources but keep
+  the current state.
+* **`docker-compose down`** Stops and **removes** all containers and the internal network. Use this when you are
+  finished with the project or need to reset the environment.
 
 ### Laravel Artisan Commands
 
@@ -27,13 +31,14 @@ To run Artisan commands, you must execute them inside the `app` container:
 Since Composer is not on your PC, we use a temporary "one-off" container to handle packages:
 
 * **Install Package:** `docker run --rm -v ${PWD}:/app composer require laravel/breeze`
-*(The `--rm` flag ensures the container is deleted immediately after the task is finished).*
+  *(The `--rm` flag ensures the container is deleted immediately after the task is finished).*
 
 ---
 
 ## 🗄 2. Database Integration (DataGrip / GUI Tools)
 
-Docker maps the container's internal MySQL port to your computer. DataGrip treats the database as if it were running locally.
+Docker maps the container's internal MySQL port to your computer. DataGrip treats the database as if it were running
+locally.
 
 **Connection Settings:**
 
@@ -44,13 +49,15 @@ Docker maps the container's internal MySQL port to your computer. DataGrip treat
 5. **Password:** `root`
 6. **Database:** `laravel_db`
 
-> **Pro Tip:** If the connection is refused, ensure no local MySQL service (like XAMPP) is already occupying port `3306`. If it is, you must stop the local service or change the port mapping in `docker-compose.yml` to `3307:3306`.
+> **Pro Tip:** If the connection is refused, ensure no local MySQL service (like XAMPP) is already occupying port
+`3306`. If it is, you must stop the local service or change the port mapping in `docker-compose.yml` to `3307:3306`.
 
 ---
 
 ## 💻 3. PHPStorm Integration & Tinker Setup
 
-To get full IDE support (code completion) and use the **Tinker Console** plugin, you must link PHPStorm to the Dockerized PHP interpreter.
+To get full IDE support (code completion) and use the **Tinker Console** plugin, you must link PHPStorm to the
+Dockerized PHP interpreter.
 
 ### Step 1: Configure Remote Interpreter
 
@@ -71,11 +78,11 @@ To get full IDE support (code completion) and use the **Tinker Console** plugin,
 
 ## 💡 Summary Table for Quick Reference
 
-| Action | Command / Logic |
-| --- | --- |
-| **Start Project** | `docker-compose up -d` |
+| Action             | Command / Logic                                   |
+|--------------------|---------------------------------------------------|
+| **Start Project**  | `docker-compose up -d`                            |
 | **Install Vendor** | `docker run --rm -v ${PWD}:/app composer install` |
-| **Artisan** | `docker-compose exec app php artisan [command]` |
-| **DB Host** | `127.0.0.1` |
-| **DB Port** | `3306` |
+| **Artisan**        | `docker-compose exec app php artisan [command]`   |
+| **DB Host**        | `127.0.0.1`                                       |
+| **DB Port**        | `3306`                                            |
 

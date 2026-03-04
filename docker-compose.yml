@@ -36,18 +36,20 @@ services:
     networks:
       - laravel_net
 
-  # 4. Cache & Queue (Redis)
+  # 4. Cache, Queue & JSON (Full Redis Stack)
   redis:
-    image: redis:latest
+    # 'redis-stack' has Insight GUI enabled by default
+    image: redis/redis-stack:latest 
     container_name: laravel_redis
     ports:
-      - "6379:6379"
+      - "6379:6379"  # Database
+      - "8001:8001"  # RedisInsight Dashboard
     volumes:
       - redis_data:/data
     networks:
       - laravel_net
 
-  # 5. Email Testing (Mailpit)
+  # 5. Email Testing Tool (Mailpit)
   mailpit:
     image: axllent/mailpit:latest
     container_name: laravel_mail
@@ -56,16 +58,10 @@ services:
     networks:
       - laravel_net
 
-# ---------------------------------------------------------
-# NETWORKS: Containers ke aapas mein baat karne ke liye
-# ---------------------------------------------------------
 networks:
   laravel_net:
     driver: bridge
 
-# ---------------------------------------------------------
-# VOLUMES: Named volumes ko yahan declare karna ZAROORI hai
-# ---------------------------------------------------------
 volumes:
   mysql_data:
   redis_data:
