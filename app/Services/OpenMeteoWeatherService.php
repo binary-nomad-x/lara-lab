@@ -389,7 +389,7 @@ class OpenMeteoWeatherService {
             $finalEndpoint = $endpointPath ?? $endpoint;
 
             $response = Http::timeout(30)
-                ->userAgent('Laravel-App/1.0') // Good practice to identify app
+                ->withUserAgent('Laravel-App/1.0') // Good practice to identify app
                 ->get("{$base}/{$finalEndpoint}", $params);
 
             if ($response->successful()) {
@@ -415,7 +415,7 @@ class OpenMeteoWeatherService {
 
         } catch (Exception $e) {
             // Don't double log if it's already logged above, but ensure propagation
-            if (strpos($e->getMessage(), 'API request failed') === false) {
+            if (!str_contains($e->getMessage(), 'API request failed')) {
                 Log::error('Open-Meteo Service Error: ' . $e->getMessage());
             }
             throw $e;

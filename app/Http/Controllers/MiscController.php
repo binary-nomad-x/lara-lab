@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class MiscController extends Controller {
 
@@ -101,7 +102,7 @@ class MiscController extends Controller {
                 'status' => 'error',
                 'message' => $e->getMessage(),
                 'debug' => config('app.debug') ? $e->getTraceAsString() : null
-            ], 500);
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
