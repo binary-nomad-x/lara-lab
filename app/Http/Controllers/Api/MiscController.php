@@ -1,15 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class MiscController extends Controller {
-
-    public function index(int $number): ?string {
-        return str_repeat('hello world', $number);
-    }
 
     /**
      * @throws \Exception
