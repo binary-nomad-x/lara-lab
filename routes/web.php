@@ -11,3 +11,6 @@ Route::get('/misc', [HomeController::class, 'index']);
 // misc routes
 Route::get('/get-weather', [MiscController::class, 'getWeather']);
 
+
+
+
