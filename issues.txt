@@ -1,0 +1,33 @@
+PS C:\projects\laravel> docker-compose exec app php artisan migrate
+
+Fatal error: Uncaught RuntimeException: Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.4.0". You are running 8.3.30. in /var/www/html/vendor/composer/platform_check.php:22
+Stack trace:
+#0 /var/www/html/vendor/composer/autoload_real.php(25): require()
+#1 /var/www/html/vendor/autoload.php(22): ComposerAutoloaderInitc514d8f7b9fc5970bdd94287905ef584::getLoader()
+#2 /var/www/html/artisan(10): require('/var/www/html/v...')
+#3 {main}
+  thrown in /var/www/html/vendor/composer/platform_check.php on line 22
+PS C:\projects\laravel> docker-compose exec app composer install
+Installing dependencies from lock file (including require-dev)
+Verifying lock file contents can be installed on current platform.
+Your lock file does not contain a compatible set of packages. Please run composer update.
+
+  Problem 1
+    - symfony/clock is locked to version v8.0.0 and an update of this package was not requested.
+    - symfony/clock v8.0.0 requires php >=8.4 -> your php version (8.3.30) does not satisfy that requirement.
+  Problem 2
+    - symfony/css-selector is locked to version v8.0.0 and an update of this package was not requested.
+    - symfony/css-selector v8.0.0 requires php >=8.4 -> your php version (8.3.30) does not satisfy that requirement.
+  Problem 3
+    - symfony/event-dispatcher is locked to version v8.0.4 and an update of this package was not requested.
+    - symfony/event-dispatcher v8.0.4 requires php >=8.4 -> your php version (8.3.30) does not satisfy that requirement.
+  Problem 4
+    - symfony/string is locked to version v8.0.4 and an update of this package was not requested.
+    - symfony/string v8.0.4 requires php >=8.4 -> your php version (8.3.30) does not satisfy that requirement.
+  Problem 5
+    - symfony/translation is locked to version v8.0.4 and an update of this package was not requested.
+    - symfony/translation v8.0.4 requires php >=8.4 -> your php version (8.3.30) does not satisfy that requirement.
+  Problem 6
+    - nesbot/carbon is locked to version 3.11.0 and an update of this package was not requested.
+    - nesbot/carbon 3.11.0 requires symfony/clock ^6.3.12 || ^7.0 || ^8.0 -> satisfiable by symfony/clock[v8.0.0].
+    - symfony/clock v8.0.0 requires php >=8.4 -> your php version (8.3.30) does not satisfy that requirement.
