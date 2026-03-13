@@ -1,4 +1,4 @@
-# 1. Base Image (PHP 8.2 or 8.3 FPM Alpine)
+# 1. Base Image (PHP 8.4 FPM Alpine)
 FROM php:8.4-fpm-alpine
 
 # 2. Set working directory
