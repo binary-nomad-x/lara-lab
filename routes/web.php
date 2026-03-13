@@ -13,4 +13,3 @@ Route::get('/get-weather', [MiscController::class, 'getWeather']);
 
 
 
-
