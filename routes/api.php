@@ -6,13 +6,17 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->group(function () {
+    // Public routes (no authentication required)
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
 
+    // Protected routes (require authentication via Sanctum)
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/profile', [AuthController::class, 'profile']);
         Route::post('/refresh', [AuthController::class, 'refresh']);
+        Route::get('/export-data', [AuthController::class, 'exportData']); // GDPR-compliant data export
+        Route::delete('/delete-account', [AuthController::class, 'deleteAccount']); // Right to be Forgotten
     });
 });
 
