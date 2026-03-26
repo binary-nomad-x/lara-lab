@@ -7,9 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class BaseModel extends Model
 {
-    protected static function booted()
+    protected static function booted(): void
     {
-        // For CLI or initial migration this might fail if not careful, 
+        // For CLI or initial migration this might fail if not careful,
         // but let's assume `tenant_id` scoping logic here.
         // For Enterprise SaaS, we can use a session variable or auth()->user()->tenant_id
         static::addGlobalScope('tenant', function (Builder $builder) {
@@ -17,7 +17,7 @@ class BaseModel extends Model
                 $builder->where('tenant_id', auth()->user()->tenant_id);
             }
         });
-        
+
         static::creating(function ($model) {
             if (auth()->check() && auth()->user()->tenant_id && in_array('tenant_id', $model->getFillable()) && empty($model->tenant_id)) {
                 $model->tenant_id = auth()->user()->tenant_id;

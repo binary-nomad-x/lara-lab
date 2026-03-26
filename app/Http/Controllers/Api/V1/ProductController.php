@@ -15,7 +15,7 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $products = Product::with('variants.stockMovements')->paginate(15);
-        
+
         return response()->json($products);
     }
 
@@ -33,7 +33,7 @@ class ProductController extends Controller
 
         try {
             DB::beginTransaction();
-            
+
             // Note: tenant_id is auto-injected via the BaseModel scopes based on auth user
             $product = Product::create([
                 'name' => $validated['name'],
@@ -59,7 +59,7 @@ class ProductController extends Controller
                 'message' => 'Product created seamlessly.',
                 'product' => $product->load('variants')
             ], 201);
-            
+
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['error' => 'Product creation failed: ' . $e->getMessage()], 500);
