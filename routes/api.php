@@ -4,15 +4,33 @@ use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\TodoController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\V1\TenantController;
+use App\Http\Controllers\Api\V1\ProductController;
+use App\Http\Controllers\Api\V1\OrderController;
+
+Route::prefix('v1')->group(function () {
+    // Nexus Tenant Onboarding
+    Route::post('/tenants/register', [TenantController::class, 'register']);
+
+    // Protected Nexus endpoints
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::apiResource('products', ProductController::class);
+        Route::post('orders', [OrderController::class, 'placeOrder']);
+    });
+});
 
 Route::prefix('auth')->group(function () {
+    // Public routes (no authentication required)
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
 
+    // Protected routes (require authentication via Sanctum)
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/profile', [AuthController::class, 'profile']);
         Route::post('/refresh', [AuthController::class, 'refresh']);
+        Route::get('/export-data', [AuthController::class, 'exportData']); // GDPR-compliant data export
+        Route::delete('/delete-account', [AuthController::class, 'deleteAccount']); // Right to be Forgotten
     });
 });
 

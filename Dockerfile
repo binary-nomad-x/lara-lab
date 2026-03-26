@@ -1,43 +1,37 @@
-FROM php:fpm-alpine3.23
+# 1. Base Image
+FROM php:8.4-fpm-alpine
 
-# 1️⃣ System + Build Dependencies
+# 2. Set working directory
+WORKDIR /var/www/html
+
+# 3. Install Runtime & Build Dependencies
 RUN apk add --no-cache \
+    libpq-dev \
     libpng-dev \
-    libjpeg-turbo-dev \
-    freetype-dev \
     libzip-dev \
     zip \
     unzip \
     git \
-    curl \
-    $PHPIZE_DEPS
+    postgresql-client \
+    # Build dependencies (Temporary) \
+    $PHPIZE_DEPS \
+    linux-headers
 
-# 2️⃣ GD configure karein (important for Alpine)
-RUN docker-php-ext-configure gd \
-    --with-freetype \
-    --with-jpeg
+# 4. Install PHP Extensions
+RUN docker-php-ext-install pdo pdo_pgsql gd zip
 
-# 3️⃣ PHP Extensions install karein
-RUN docker-php-ext-install \
-    pdo \
-    pdo_mysql \
-    bcmath \
-    gd \
-    zip
-
-# 4️⃣ 🔥 Redis Extension install karein
+# 5. Install Redis & Cleanup Build Deps
+# Humne 'del' use kiya hai taake compile tools remove ho jayein
 RUN pecl install redis \
-    && docker-php-ext-enable redis
+    && docker-php-ext-enable redis \
+    && apk del $PHPIZE_DEPS linux-headers
 
-# 5️⃣ Composer copy karein
+# 6. Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# 6️⃣ Working directory
-WORKDIR /var/www/html
-
-# 7️⃣ Permissions fix
+# 7. Permissions
+COPY . /var/www/html
 RUN chown -R www-data:www-data /var/www/html
 
 EXPOSE 9000
-
 CMD ["php-fpm"]

@@ -1,0 +1,70 @@
+{
+    "name": "Laravel PHP-FPM (Dev Container)",
+    "dockerComposeFile": [
+        "../docker-compose.yml",
+        "docker-compose.override.yml"
+    ],
+    "service": "app",
+    "workspaceFolder": "/var/www/html",
+    
+    // CRITICAL: Do not stop containers when VS Code closes
+    "shutdownAction": "none",
+    
+    // Services to start automatically
+    "runServices": [
+        "app",
+        "nginx",
+        "db",
+        "redis",
+        "mailpit"
+    ],
+
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "xdebug.php-debug",
+                "onecentlin.laravel-extra-intellisense",
+                "onecentlin.laravel5-snippets",
+                "onecentlin.laravel-blade",
+                "mikestead.dotenv",
+                "esbenp.prettier-vscode",
+                "bmewburn.vscode-intelephense-client",
+                "formulahendry.auto-rename-tag"
+            ],
+            "settings": {
+                "terminal.integrated.defaultProfile.linux": "bash",
+                "php.validate.enable": false,
+                "php.suggest.basic": false,
+                "intelephense.environment.includePaths": [
+                    "/var/www/html"
+                ],
+                // Since we are INSIDE the container, php is native!
+                "laravel-extra-intellisense.phpCommand": "php",
+                "laravel-extra-intellisense.useDocker": false,
+                "laravel-extra-intellisense.basePath": "/var/www/html",
+                "files.watcherExclude": {
+                    "**/vendor/**": true,
+                    "**/node_modules/**": true
+                }
+            }
+        }
+    },
+
+    "forwardPorts": [
+        8000, 
+        5432, 
+        6379, 
+        8001, 
+        8025
+    ],
+
+    // Run as root initially to install extensions, then switch if needed
+    "remoteUser": "root",
+    
+    // Ensure dependencies are installed and permissions are fixed
+    "postCreateCommand": "chown -R 1000:1000 /var/www/html && composer install --ignore-platform-reqs --no-interaction",
+    
+    "mounts": [
+        "source=${localEnv:HOME}/.ssh,target=/root/.ssh,type=bind,consistency=cached"
+    ]
+}
