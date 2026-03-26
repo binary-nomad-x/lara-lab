@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\UserStatuses;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Schema;
@@ -37,6 +38,8 @@ class UsersSeeder extends Seeder
                         if (isset($array['email_verified_at'])) {
                             $array['email_verified_at'] = $user->email_verified_at->format('Y-m-d H:i:s');
                         }
+
+                        $array['status'] = UserStatuses::ACTIVE;
 
                         $array['created_at'] = $currentDateTime;
                         $array['updated_at'] = $currentDateTime;
