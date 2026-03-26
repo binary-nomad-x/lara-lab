@@ -41,7 +41,7 @@ services:
   # 4. Cache, Queue & JSON (Full Redis Stack)
   redis:
     # 'redis-stack' has Insight GUI enabled by default
-    image: redis/redis-stack:latest 
+    image: redis/redis-stack:latest
     container_name: laravel_redis
     ports:
       - "6379:6379"  # Database

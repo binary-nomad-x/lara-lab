@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Enums\UserStatuses;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Schema;
 
 class UsersSeeder extends Seeder
@@ -39,7 +40,11 @@ class UsersSeeder extends Seeder
                             $array['email_verified_at'] = $user->email_verified_at->format('Y-m-d H:i:s');
                         }
 
-                        $array['status'] = UserStatuses::ACTIVE;
+                        $array['status'] = Arr::random([
+                            UserStatuses::ACTIVE->value,
+                            UserStatuses::INACTIVE->value,
+                            UserStatuses::DISABLED->value
+                        ]);
 
                         $array['created_at'] = $currentDateTime;
                         $array['updated_at'] = $currentDateTime;

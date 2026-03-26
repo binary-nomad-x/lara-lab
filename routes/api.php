@@ -4,6 +4,20 @@ use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\TodoController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\V1\TenantController;
+use App\Http\Controllers\Api\V1\ProductController;
+use App\Http\Controllers\Api\V1\OrderController;
+
+Route::prefix('v1')->group(function () {
+    // Nexus Tenant Onboarding
+    Route::post('/tenants/register', [TenantController::class, 'register']);
+
+    // Protected Nexus endpoints
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::apiResource('products', ProductController::class);
+        Route::post('orders', [OrderController::class, 'placeOrder']);
+    });
+});
 
 Route::prefix('auth')->group(function () {
     // Public routes (no authentication required)
