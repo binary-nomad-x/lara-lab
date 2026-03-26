@@ -14,9 +14,9 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $products = Product::with('variants.stockMovements')->paginate(15);
-
-        return response()->json($products);
+        return response()->json([
+            'data' => Product::with('variants.stockMovements')->paginate($request->input('page_size', 20))
+        ]);
     }
 
     public function store(Request $request)
