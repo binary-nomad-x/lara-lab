@@ -18,7 +18,7 @@ class BaseModel extends Model
             }
         });
 
-        static::creating(function ($model) {
+        static::creating(function (Model $model) {
             if (auth()->check() && auth()->user()->tenant_id && in_array('tenant_id', $model->getFillable()) && empty($model->tenant_id)) {
                 $model->tenant_id = auth()->user()->tenant_id;
             }
