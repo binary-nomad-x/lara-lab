@@ -7,7 +7,8 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
-class OpenMeteoWeatherService {
+class OpenMeteoWeatherService
+{
 
     // Fixed: Removed trailing spaces from URL
     private string $baseUrl = 'https://api.open-meteo.com/v1';
@@ -29,7 +30,8 @@ class OpenMeteoWeatherService {
         float $longitude,
         array $currentVariables = ['temperature_2m', 'relative_humidity_2m', 'precipitation', 'weather_code', 'wind_speed_10m', 'wind_direction_10m'],
         int   $timezoneOffset = 0
-    ): array {
+    ): array
+    {
         $params = [
             'latitude' => $latitude,
             'longitude' => $longitude,
@@ -55,7 +57,8 @@ class OpenMeteoWeatherService {
         float $longitude,
         int   $days = 7,
         array $hourlyVariables = ['temperature_2m', 'relative_humidity_2m', 'precipitation', 'weather_code', 'wind_speed_10m', 'visibility']
-    ): array {
+    ): array
+    {
         $params = [
             'latitude' => $latitude,
             'longitude' => $longitude,
@@ -87,7 +90,8 @@ class OpenMeteoWeatherService {
             'weather_code', 'wind_speed_10m_max',
             'sunrise', 'sunset', 'uv_index_max'
         ]
-    ): array {
+    ): array
+    {
         $params = [
             'latitude' => $latitude,
             'longitude' => $longitude,
@@ -118,7 +122,8 @@ class OpenMeteoWeatherService {
         ?string $end = null,
         array   $hourlyVariables = [],
         array   $dailyVariables = []
-    ): array {
+    ): array
+    {
         $params = [
             'latitude' => $latitude,
             'longitude' => $longitude,
@@ -146,7 +151,8 @@ class OpenMeteoWeatherService {
      * @return array Weather alerts data
      * @throws Exception
      */
-    public function getWeatherAlerts(float $latitude, float $longitude): array {
+    public function getWeatherAlerts(float $latitude, float $longitude): array
+    {
         $params = [
             'latitude' => $latitude,
             'longitude' => $longitude
@@ -164,7 +170,8 @@ class OpenMeteoWeatherService {
      * @return array Location search results
      * @throws Exception
      */
-    public function searchLocation(string $query, int $count = 1, ?string $countryCode = null): array {
+    public function searchLocation(string $query, int $count = 1, ?string $countryCode = null): array
+    {
         $params = [
             'name' => $query,
             'count' => $count,
@@ -187,7 +194,8 @@ class OpenMeteoWeatherService {
      * @return array Location details (name, country, admin areas)
      * @throws Exception
      */
-    public function reverseGeocode(float $latitude, float $longitude): array {
+    public function reverseGeocode(float $latitude, float $longitude): array
+    {
         $params = [
             'latitude' => $latitude,
             'longitude' => $longitude,
@@ -210,7 +218,8 @@ class OpenMeteoWeatherService {
      * @return array Elevation data
      * @throws Exception
      */
-    public function getElevation(float $latitude, float $longitude): array {
+    public function getElevation(float $latitude, float $longitude): array
+    {
         $params = [
             'latitude' => $latitude,
             'longitude' => $longitude
@@ -237,7 +246,8 @@ class OpenMeteoWeatherService {
             'sulphur_dioxide', 'ozone', 'aerosol_optical_depth',
             'dust', 'uv_index'
         ]
-    ): array {
+    ): array
+    {
         $params = [
             'latitude' => $latitude,
             'longitude' => $longitude,
@@ -257,7 +267,8 @@ class OpenMeteoWeatherService {
      * @return array Forecast office metadata
      * @throws Exception
      */
-    public function getForecastOffice(float $latitude, float $longitude): array {
+    public function getForecastOffice(float $latitude, float $longitude): array
+    {
         $params = [
             'latitude' => $latitude,
             'longitude' => $longitude,
@@ -282,7 +293,8 @@ class OpenMeteoWeatherService {
         float  $longitude,
         string $startDate,
         string $endDate
-    ): array {
+    ): array
+    {
         $params = [
             'latitude' => $latitude,
             'longitude' => $longitude,
@@ -303,7 +315,8 @@ class OpenMeteoWeatherService {
      * @return array Timezone information
      * @throws Exception
      */
-    public function getTimezone(float $latitude, float $longitude): array {
+    public function getTimezone(float $latitude, float $longitude): array
+    {
         $params = [
             'latitude' => $latitude,
             'longitude' => $longitude,
@@ -327,8 +340,9 @@ class OpenMeteoWeatherService {
      * @param int $weatherCode WMO Weather Code
      * @return string Weather description
      */
-    public function parseWeatherCode(int $weatherCode): string {
-        $codes = [
+    public function parseWeatherCode(int $weatherCode): string
+    {
+        return match ($weatherCode) {
             0 => 'Clear sky',
             1 => 'Mainly clear',
             2 => 'Partly cloudy',
@@ -356,11 +370,11 @@ class OpenMeteoWeatherService {
             86 => 'Heavy snow showers',
             95 => 'Thunderstorm',
             96 => 'Thunderstorm with slight hail',
-            99 => 'Thunderstorm with heavy hail'
-        ];
-
-        return $codes[$weatherCode] ?? 'Unknown';
+            99 => 'Thunderstorm with heavy hail',
+            default => 'Unknown',
+        };
     }
+
 
     /**
      * Make HTTP request to Open-Meteo API with caching
@@ -372,7 +386,8 @@ class OpenMeteoWeatherService {
      * @return array API response
      * @throws Exception
      */
-    private function makeRequest(string $endpoint, array $params, ?string $endpointPath = null, bool $isAirQuality = false): array {
+    private function makeRequest(string $endpoint, array $params, ?string $endpointPath = null, bool $isAirQuality = false): array
+    {
         // Create a unique cache key based on endpoint, params, and API type
         $cachePrefix = $isAirQuality ? 'openmeteo_aq_' : 'openmeteo_';
         $cacheKey = $cachePrefix . md5($endpoint . serialize($params));
