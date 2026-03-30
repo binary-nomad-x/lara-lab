@@ -12,4 +12,11 @@ class OrderItem extends BaseModel
 
 
     //
+
+    public function order() {
+        return $this->belongsTo(Order::class);
+    }
+    public function variant() {
+        return $this->belongsTo(Variant::class);
+    }
 }

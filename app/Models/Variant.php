@@ -18,4 +18,17 @@ class Variant extends BaseModel
         return $this->belongsTo(Product::class, 'product_id', 'id');
     }
 
+
+    public function product() {
+        return $this->belongsTo(Product::class);
+    }
+    public function stockMovements() {
+        return $this->hasMany(StockMovement::class);
+    }
+    public function orderItems() {
+        return $this->hasMany(OrderItem::class);
+    }
+    public function getStockAttribute() {
+        return $this->stockMovements()->sum('quantity');
+    }
 }

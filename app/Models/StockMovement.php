@@ -10,4 +10,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class StockMovement extends BaseModel
 {
     use HasFactory, HasUuids;
+
+    public function variant() {
+        return $this->belongsTo(Variant::class);
+    }
 }

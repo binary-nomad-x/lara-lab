@@ -19,4 +19,11 @@ class Product extends BaseModel
         return $this->hasMany(Variant::class, 'product_id', 'id');
     }
 
+
+    public function tenant() {
+        return $this->belongsTo(Tenant::class);
+    }
+    public function variants() {
+        return $this->hasMany(Variant::class);
+    }
 }

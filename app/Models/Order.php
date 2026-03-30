@@ -18,4 +18,11 @@ class Order extends BaseModel
     ];
 
 
+
+    public function items() {
+        return $this->hasMany(OrderItem::class);
+    }
+    public function tenant() {
+        return $this->belongsTo(Tenant::class);
+    }
 }
