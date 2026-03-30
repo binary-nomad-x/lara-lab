@@ -10,8 +10,6 @@ class OrderItem extends BaseModel
 {
     use HasFactory, HasUuids;
 
-    protected $keyType = 'string';
-    public $incrementing = false;
-    protected $guarded = [];
+
     //
 }

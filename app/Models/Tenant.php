@@ -9,8 +9,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Tenant extends BaseModel
 {
     use HasFactory, HasUuids;
-    protected $keyType = 'string';
-    public $incrementing = false;
-    protected $guarded = [];
+
     //
 }
