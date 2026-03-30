@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class MiscController extends Controller {
+class WeatherController extends Controller {
 
     /**
      * @throws \Exception

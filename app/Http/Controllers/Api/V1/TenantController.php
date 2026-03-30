@@ -27,7 +27,7 @@ class TenantController extends Controller
             DB::beginTransaction();
 
             $slug = \Str::slug($validated['tenant_name']);
-            
+
             // Allow duplicate slug suffix
             $originalSlug = $slug;
             $counter = 1;
@@ -65,7 +65,7 @@ class TenantController extends Controller
                 'user' => $user,
                 'domain' => $domain
             ], 201);
-            
+
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['error' => 'Registration failed: ' . $e->getMessage()], 500);

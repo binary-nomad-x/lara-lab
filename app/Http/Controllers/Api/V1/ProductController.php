@@ -38,18 +38,18 @@ class ProductController extends Controller
             $product = Product::create([
                 'name' => $validated['name'],
                 'description' => $validated['description'] ?? null,
-                'sku' => $validated['variants'][0]['sku'] ?? strtoupper(Str::random(10)),
+                'sku' => $validated['variants'][0]['sku'] ?? generateSku(),
             ]);
 
-            $createdVariants = [];
-            foreach ($validated['variants'] as $v) {
-                $createdVariants[] = Variant::create([
+
+            foreach ($validated['variants'] as $variant) {
+                Variant::create([
                     'product_id' => $product->id,
                     'tenant_id' => auth()->user()->tenant_id,
-                    'name' => $v['name'],
-                    'sku' => $v['sku'] ?? strtoupper(Str::random(12)),
-                    'price' => $v['price'],
-                    'cost' => $v['cost'] ?? null,
+                    'name' => $variant['name'],
+                    'sku' => $variant['sku'] ?? generateSku(),
+                    'price' => $variant['price'],
+                    'cost' => $variant['cost'] ?? null,
                 ]);
             }
 

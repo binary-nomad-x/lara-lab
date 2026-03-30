@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class BaseModel extends Model
 {
+    protected $fillable = [
+        'total_amount',
+    ];
+
     protected static function booted(): void
     {
         // For CLI or initial migration this might fail if not careful,
