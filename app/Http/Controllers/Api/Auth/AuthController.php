@@ -7,19 +7,18 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
-class AuthController extends Controller
-{
+class AuthController extends Controller {
     /**
      * Register a new user.
      */
-    public function register(RegisterRequest $request): JsonResponse
-    {
+    public function register(RegisterRequest $request): JsonResponse {
         try {
             // Create the user
             $user = User::create([
@@ -36,7 +35,7 @@ class AuthController extends Controller
                 'user' => new UserResource($user),
                 'token' => $token,
             ], 201);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('User registration failed: ' . $e->getMessage());
             return response()->json([
                 'message' => 'Registration failed. Please try again later.',
@@ -47,8 +46,7 @@ class AuthController extends Controller
     /**
      * Authenticate a user.
      */
-    public function login(LoginRequest $request): JsonResponse
-    {
+    public function login(LoginRequest $request): JsonResponse {
         try {
             // Find the user by email
             $user = User::where('email', $request->email)->first();
@@ -75,7 +73,7 @@ class AuthController extends Controller
                 'user' => new UserResource($user),
                 'token' => $token,
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('User login failed: ' . $e->getMessage());
             return response()->json([
                 'message' => 'Login failed. Please try again later.',
@@ -86,8 +84,7 @@ class AuthController extends Controller
     /**
      * Logout the authenticated user.
      */
-    public function logout(Request $request): JsonResponse
-    {
+    public function logout(Request $request): JsonResponse {
         try {
             // Revoke the current access token
             $request->user()->currentAccessToken()->delete();
@@ -95,7 +92,7 @@ class AuthController extends Controller
             return response()->json([
                 'message' => 'Logged out successfully',
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('User logout failed: ' . $e->getMessage());
             return response()->json([
                 'message' => 'Logout failed. Please try again later.',
@@ -106,8 +103,7 @@ class AuthController extends Controller
     /**
      * Fetch the authenticated user's profile.
      */
-    public function profile(Request $request): JsonResponse
-    {
+    public function profile(Request $request): JsonResponse {
         try {
             // Ensure the user is authenticated
             if (!$request->user()) {
@@ -119,7 +115,7 @@ class AuthController extends Controller
             return response()->json([
                 'user' => new UserResource($request->user()),
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Profile fetch failed: ' . $e->getMessage());
             return response()->json([
                 'message' => 'Failed to fetch profile. Please try again later.',
@@ -130,8 +126,7 @@ class AuthController extends Controller
     /**
      * Refresh the authentication token.
      */
-    public function refresh(Request $request): JsonResponse
-    {
+    public function refresh(Request $request): JsonResponse {
         try {
             // Revoke the current token
             $request->user()->currentAccessToken()->delete();
@@ -143,7 +138,7 @@ class AuthController extends Controller
                 'message' => 'Token refreshed successfully',
                 'token' => $token,
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Token refresh failed: ' . $e->getMessage());
             return response()->json([
                 'message' => 'Token refresh failed. Please try again later.',
@@ -170,7 +165,7 @@ class AuthController extends Controller
                 'message' => 'Data exported successfully',
                 'data' => $userData,
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Data export failed: ' . $e->getMessage());
             return response()->json([
                 'message' => 'Failed to export data. Please try again later.',
@@ -196,7 +191,7 @@ class AuthController extends Controller
             return response()->json([
                 'message' => 'Account deleted successfully',
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Account deletion failed: ' . $e->getMessage());
             return response()->json([
                 'message' => 'Failed to delete account. Please try again later.',

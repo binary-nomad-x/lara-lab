@@ -5,9 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class ReturnModel extends BaseModel
-{
+class ReturnModel extends BaseModel {
     use HasFactory, HasUuids;
-
-    //
 }

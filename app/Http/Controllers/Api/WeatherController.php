@@ -3,13 +3,15 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Services\OpenMeteoWeatherService;
+use Exception;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class WeatherController extends Controller {
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function getWeather(Request $request) {
         // Coordinates for Lahore, Pakistan
@@ -17,7 +19,7 @@ class WeatherController extends Controller {
         $lon = $request->input('lon', 74.3587);
 
         // Initialize Service
-        $weatherService = new \App\Services\OpenMeteoWeatherService();
+        $weatherService = new OpenMeteoWeatherService();
 
         try {
             // 1. Current Weather & Basic Forecast
@@ -94,7 +96,7 @@ class WeatherController extends Controller {
                 ]
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage(),

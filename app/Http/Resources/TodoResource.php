@@ -8,8 +8,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 #[AllowDynamicProperties]
 class TodoResource extends JsonResource {
-    public function toArray(Request $request): array
-    {
+    public function toArray(Request $request): array {
         return [
             'id' => $this->id,
             'title' => $this->title,

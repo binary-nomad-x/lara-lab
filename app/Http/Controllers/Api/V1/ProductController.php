@@ -5,20 +5,18 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\Variant;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class ProductController extends Controller
-{
-    public function index(Request $request)
-    {
+class ProductController extends Controller {
+    public function index(Request $request) {
         return response()->json([
             'data' => Product::with('variants.stockMovements')->paginate($request->input('page_size', 20))
         ]);
     }
 
-    public function store(Request $request)
-    {
+    public function store(Request $request) {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -39,7 +37,6 @@ class ProductController extends Controller
                 'sku' => $validated['variants'][0]['sku'] ?? generateSku(),
             ]);
 
-
             foreach ($validated['variants'] as $variant) {
                 Variant::create([
                     'product_id' => $product->id,
@@ -58,14 +55,13 @@ class ProductController extends Controller
                 'product' => $product->load('variants')
             ], 201);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             return response()->json(['error' => 'Product creation failed: ' . $e->getMessage()], 500);
         }
     }
 
-    public function show($id)
-    {
+    public function show($id) {
         $product = Product::with('variants')->findOrFail($id);
         return response()->json($product);
     }

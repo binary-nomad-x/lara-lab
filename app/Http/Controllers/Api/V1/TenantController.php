@@ -3,18 +3,17 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Models\Tenant;
 use App\Models\Domain;
+use App\Models\Tenant;
 use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
+use Str;
 
-class TenantController extends Controller
-{
-    public function register(Request $request)
-    {
+class TenantController extends Controller {
+    public function register(Request $request) {
         $validated = $request->validate([
             'tenant_name' => 'required|string|max:255',
             'domain' => 'required|string|unique:domains,domain',
@@ -26,7 +25,7 @@ class TenantController extends Controller
         try {
             DB::beginTransaction();
 
-            $slug = \Str::slug($validated['tenant_name']);
+            $slug = Str::slug($validated['tenant_name']);
 
             // Allow duplicate slug suffix
             $originalSlug = $slug;
@@ -66,7 +65,7 @@ class TenantController extends Controller
                 'domain' => $domain
             ], 201);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             return response()->json(['error' => 'Registration failed: ' . $e->getMessage()], 500);
         }

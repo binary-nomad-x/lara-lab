@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Ledger extends BaseModel
-{
+class Ledger extends BaseModel {
     use HasFactory, HasUuids;
 }

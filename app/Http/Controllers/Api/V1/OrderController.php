@@ -3,19 +3,19 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Models\Order;
-use App\Models\OrderItem;
-use App\Models\Variant;
-use App\Models\Ledger;
 use App\Models\Account;
 use App\Models\JournalEntry;
+use App\Models\Ledger;
+use App\Models\Order;
+use App\Models\OrderItem;
+use App\Models\StockMovement;
+use App\Models\Variant;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class OrderController extends Controller
-{
-    public function placeOrder(Request $request)
-    {
+class OrderController extends Controller {
+    public function placeOrder(Request $request) {
         $validated = $request->validate([
             'items' => 'required|array|min:1',
             'items.*.variant_id' => 'required|uuid|exists:variants,id',
@@ -26,7 +26,7 @@ class OrderController extends Controller
         try {
             DB::beginTransaction();
             $tenantId = auth()->user()->tenant_id;
-            
+
             $order = Order::create([
                 'tenant_id' => $tenantId,
                 'status' => 'Confirmed', // Skips draft
@@ -38,7 +38,7 @@ class OrderController extends Controller
             foreach ($validated['items'] as $item) {
                 $variant = Variant::findOrFail($item['variant_id']);
                 $lineTotal = $variant->price * $item['quantity'];
-                
+
                 OrderItem::create([
                     'tenant_id' => $tenantId,
                     'order_id' => $order->id,
@@ -51,7 +51,7 @@ class OrderController extends Controller
                 $totalAmount += $lineTotal;
 
                 // Adjust stock movement
-                \App\Models\StockMovement::create([
+                StockMovement::create([
                     'tenant_id' => $tenantId,
                     'variant_id' => $item['variant_id'],
                     'quantity' => -$item['quantity'], // Negative for sale
@@ -92,8 +92,8 @@ class OrderController extends Controller
                 'message' => 'Order processed with double-entry ledgers.',
                 'order' => $order->load('items')
             ], 201);
-            
-        } catch (\Exception $e) {
+
+        } catch (Exception $e) {
             DB::rollBack();
             return response()->json(['error' => 'Order processing failed: ' . $e->getMessage()], 500);
         }

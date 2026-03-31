@@ -4,10 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
-    public function up(): void
-    {
+return new class extends Migration {
+    public function up(): void {
         // 1. Tenancy Core
         Schema::create('tenants', function (Blueprint $table) {
             $table->uuid('id')->primary();
@@ -40,7 +38,7 @@ return new class extends Migration
         // Note: Default Laravel create_users_table migration exists. I'll modify that via replace_file_content or add a column here.
         Schema::table('users', function (Blueprint $table) {
             if (!Schema::hasColumn('users', 'tenant_id')) {
-                $table->uuid('tenant_id')->nullable()->after('id');
+                $table->uuid('tenant_id')->nullable()->after('status');
                 // The foreign key constraint won't work on 'users' id if it is an int/bigint and tenants.id is UUID unless we cast or drop and recreate. 
                 // A better approach is dropping users table and recreating it, but wait, default auth uses bigint ids. Let's make user uuid as well.
             }
@@ -87,11 +85,11 @@ return new class extends Migration
             $table->uuid('variant_id');
             $table->integer('quantity'); // Positive for in, negative for out
             $table->string('type'); // purchase, sale, adjustment, return
-            $table->string('reference_id')->nullable(); 
+            $table->string('reference_id')->nullable();
             $table->timestamps(); // partitioned by date eventually
             $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade');
             $table->foreign('variant_id')->references('id')->on('variants')->onDelete('cascade');
-            
+
             $table->index(['tenant_id', 'variant_id']);
         });
 
@@ -184,7 +182,7 @@ return new class extends Migration
             $table->timestamps();
             $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade');
         });
-        
+
         Schema::create('sync_queues', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('tenant_id');
@@ -197,10 +195,42 @@ return new class extends Migration
             $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade');
             $table->foreign('device_id')->references('device_id')->on('device_registries')->onDelete('cascade');
         });
+
+        Schema::create('activity_history', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->uuid('tenant_id');
+            $table->string('device_id');
+            $table->jsonb('data');
+            $table->timestamps();
+        });
+
+        Schema::create('conflict_logs', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->uuid('tenant_id');
+            $table->string('device_id');
+            $table->jsonb('data');
+            $table->timestamps();
+        });
+
+        Schema::create('return_models', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->uuid('tenant_id');
+            $table->string('device_id');
+            $table->jsonb('data');
+            $table->timestamps();
+        });
+
+        Schema::create('shipments', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->uuid('tenant_id');
+            $table->string('device_id');
+            $table->jsonb('data');
+            $table->timestamps();
+        });
+
     }
 
-    public function down(): void
-    {
+    public function down(): void {
         Schema::dropIfExists('sync_queues');
         Schema::dropIfExists('device_registries');
         Schema::dropIfExists('audit_logs');
@@ -222,5 +252,9 @@ return new class extends Migration
             }
         });
         Schema::dropIfExists('tenants');
+        Schema::dropIfExists('activity_history');
+        Schema::dropIfExists('conflict_logs');
+        Schema::dropIfExists('return_models');
+        Schema::dropIfExists('shipments');
     }
 };

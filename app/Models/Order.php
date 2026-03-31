@@ -4,10 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Order extends BaseModel
-{
+class Order extends BaseModel {
     use HasFactory, HasUuids;
 
     protected $fillable = [
@@ -17,11 +15,10 @@ class Order extends BaseModel
         'total_amount',
     ];
 
-
-
     public function items() {
         return $this->hasMany(OrderItem::class);
     }
+
     public function tenant() {
         return $this->belongsTo(Tenant::class);
     }

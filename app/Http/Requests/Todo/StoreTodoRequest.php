@@ -4,15 +4,12 @@ namespace App\Http\Requests\Todo;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreTodoRequest extends FormRequest
-{
-    public function authorize(): bool
-    {
+class StoreTodoRequest extends FormRequest {
+    public function authorize(): bool {
         return true;
     }
 
-    public function rules(): array
-    {
+    public function rules(): array {
         return [
             'title' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',
@@ -21,8 +18,7 @@ class StoreTodoRequest extends FormRequest
         ];
     }
 
-    public function messages(): array
-    {
+    public function messages(): array {
         return [
             'title.required' => 'Title is required',
             'title.string' => 'Title must be a string',

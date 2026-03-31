@@ -2,13 +2,12 @@
 
 namespace App\Models;
 
-
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class ConflictLog extends BaseModel
-{
+class ConflictLog extends BaseModel {
     use HasFactory, HasUuids;
 
-    //
+    protected $table = 'conflict_logs';
+
 }

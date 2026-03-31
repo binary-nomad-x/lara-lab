@@ -2,28 +2,20 @@
 
 namespace App\Models;
 
-
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Product extends BaseModel
-{
+class Product extends BaseModel {
     use HasFactory, HasUuids;
 
-
-
-
-    public function variants(): HasMany
-    {
+    public function variants(): HasMany {
         return $this->hasMany(Variant::class, 'product_id', 'id');
     }
 
-
-    public function tenant() {
+    public function tenant(): BelongsTo {
         return $this->belongsTo(Tenant::class);
     }
-    public function variants() {
-        return $this->hasMany(Variant::class);
-    }
+
 }

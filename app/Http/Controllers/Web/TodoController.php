@@ -10,10 +10,8 @@ use App\Models\Todo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class TodoController extends Controller
-{
-    public function index(Request $request): JsonResponse
-    {
+class TodoController extends Controller {
+    public function index(Request $request): JsonResponse {
         $todos = $request->user()->todos()
             ->withFilters($request)
             ->orderBy('priority', 'desc')
@@ -26,8 +24,7 @@ class TodoController extends Controller
         ]);
     }
 
-    public function store(StoreTodoRequest $request): JsonResponse
-    {
+    public function store(StoreTodoRequest $request): JsonResponse {
         $todo = $request->user()->todos()->create($request->validated());
 
         return response()->json([
@@ -36,8 +33,7 @@ class TodoController extends Controller
         ], 201);
     }
 
-    public function show(Request $request, Todo $todo): JsonResponse
-    {
+    public function show(Request $request, Todo $todo): JsonResponse {
         if ($todo->user_id !== $request->user()->id) {
             return response()->json([
                 'message' => 'Unauthorized',
@@ -49,24 +45,7 @@ class TodoController extends Controller
         ]);
     }
 
-    public function update(UpdateTodoRequest $request, Todo $todo): JsonResponse
-    {
-        if ($todo->user_id !== $request->user()->id) {
-            return response()->json([
-                'message' => 'Unauthorized',
-            ], 403);
-        }
-
-        $todo->update($request->validated());
-
-        return response()->json([
-            'message' => 'Todo updated successfully',
-            'todo' => new TodoResource($todo),
-        ]);
-    }
-
-    public function destroy(Request $request, Todo $todo): JsonResponse
-    {
+    public function destroy(Request $request, Todo $todo): JsonResponse {
         if ($todo->user_id !== $request->user()->id) {
             return response()->json([
                 'message' => 'Unauthorized',
@@ -80,8 +59,7 @@ class TodoController extends Controller
         ]);
     }
 
-    public function toggleComplete(Request $request, Todo $todo): JsonResponse
-    {
+    public function toggleComplete(Request $request, Todo $todo): JsonResponse {
         if ($todo->user_id !== $request->user()->id) {
             return response()->json([
                 'message' => 'Unauthorized',
@@ -98,8 +76,22 @@ class TodoController extends Controller
         ]);
     }
 
-    public function statistics(Request $request): JsonResponse
-    {
+    public function update(UpdateTodoRequest $request, Todo $todo): JsonResponse {
+        if ($todo->user_id !== $request->user()->id) {
+            return response()->json([
+                'message' => 'Unauthorized',
+            ], 403);
+        }
+
+        $todo->update($request->validated());
+
+        return response()->json([
+            'message' => 'Todo updated successfully',
+            'todo' => new TodoResource($todo),
+        ]);
+    }
+
+    public function statistics(Request $request): JsonResponse {
         $user = $request->user();
 
         $stats = [

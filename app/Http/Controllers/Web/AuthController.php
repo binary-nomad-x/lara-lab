@@ -3,45 +3,26 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
-use App\Models\Tenant;
 use App\Models\Domain;
+use App\Models\Tenant;
 use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Str;
 
-class AuthController extends Controller
-{
-    public function showLogin()
-    {
+class AuthController extends Controller {
+    public function showLogin() {
         return view('auth.login');
     }
 
-    public function login(Request $request)
-    {
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required'
-        ]);
-
-        if (Auth::attempt($credentials, $request->boolean('remember'))) {
-            $request->session()->regenerate();
-            return redirect()->intended('/dashboard')->with('success', 'Welcome back!');
-        }
-
-        return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ])->onlyInput('email');
-    }
-
-    public function showRegister()
-    {
+    public function showRegister() {
         return view('auth.register');
     }
 
-    public function register(Request $request)
-    {
+    public function register(Request $request) {
         $validated = $request->validate([
             'tenant_name' => 'required|string|max:255',
             'domain' => 'required|string|unique:domains,domain',
@@ -53,7 +34,7 @@ class AuthController extends Controller
         try {
             DB::beginTransaction();
 
-            $slug = \Str::slug($validated['tenant_name']);
+            $slug = Str::slug($validated['tenant_name']);
             $originalSlug = $slug;
             $counter = 1;
             while (Tenant::where('slug', $slug)->exists()) {
@@ -83,14 +64,29 @@ class AuthController extends Controller
 
             Auth::login($user);
             return redirect('/dashboard')->with('success', 'Registration successful! Welcome to Nexus EIAMS.');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             return back()->withErrors(['error' => 'Registration failed: ' . $e->getMessage()]);
         }
     }
 
-    public function logout(Request $request)
-    {
+    public function login(Request $request) {
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
+
+        if (Auth::attempt($credentials, $request->boolean('remember'))) {
+            $request->session()->regenerate();
+            return redirect()->intended('/dashboard')->with('success', 'Welcome back!');
+        }
+
+        return back()->withErrors([
+            'email' => 'The provided credentials do not match our records.',
+        ])->onlyInput('email');
+    }
+
+    public function logout(Request $request) {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
