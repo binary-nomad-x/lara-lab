@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class BaseModel extends Model
 {
@@ -23,6 +24,7 @@ class BaseModel extends Model
         });
 
         static::creating(function (Model $model) {
+            $model->id = Str::uuid7();
             if (auth()->check() && auth()->user()->tenant_id && in_array('tenant_id', $model->getFillable()) && empty($model->tenant_id)) {
                 $model->tenant_id = auth()->user()->tenant_id;
             }

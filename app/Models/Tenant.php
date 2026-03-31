@@ -10,18 +10,25 @@ class Tenant extends BaseModel
 {
     use HasFactory, HasUuids;
 
-    //
+    protected $guarded = ['id'];
 
-    public function users() {
+    public function users()
+    {
         return $this->hasMany(User::class);
     }
-    public function products() {
+
+    public function products()
+    {
         return $this->hasMany(Product::class);
     }
-    public function domains() {
+
+    public function domains()
+    {
         return $this->hasMany(Domain::class);
     }
-    public function orders() {
+
+    public function orders()
+    {
         return $this->hasMany(Order::class);
     }
 }
