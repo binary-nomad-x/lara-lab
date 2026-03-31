@@ -1,6 +1,6 @@
 @extends('layouts.nexus')
 
-@section('title', 'Dashboard')
+@section('title', 'Enterprise Dashboard')
 
 @section('vendor-css')
 <link rel="stylesheet" href="/assets/vendor/libs/apex-charts/apex-charts.css" />
@@ -9,158 +9,206 @@
 
 @section('content')
 <div class="row">
-    <!-- Website Analytics -->
+    <!-- Welcome Card -->
     <div class="col-lg-12 mb-6">
-        <div class="swiper-container swiper-container-horizontal swiper-dashboard-analytics card shadow-none bg-label-primary">
+        <div class="card bg-label-primary shadow-none border-0">
             <div class="card-body">
                 <div class="row align-items-center">
-                    <div class="col-sm-7 ps-lg-6 ps-md-4 pt-sm-4 pb-sm-4">
-                        <h4 class="card-title mb-1 text-primary">Welcome back, {{ Auth::user()->name }}! 🎉</h4>
-                        <p class="mb-4">You have done <span class="fw-medium">72%</span> more sales today. Check your new badge in your profile.</p>
-                        <a href="javascript:;" class="btn btn-primary">View Sales</a>
+                    <div class="col-sm-7">
+                        <h4 class="card-title mb-1 text-primary">Nexus Global Intelligence 👋</h4>
+                        <p class="mb-4 text-body">Real-time enterprise monitoring active. You have <span class="fw-bold">{{ $totalOrders }}</span> total orders and <span class="fw-bold text-danger">{{ $lowStockCount }}</span> critical stock alerts needing attention.</p>
+                        <div class="d-flex gap-3">
+                            <a href="{{ route('orders.list') }}" class="btn btn-primary btn-sm">Process Orders</a>
+                            <a href="{{ route('inventory.products.index') }}" class="btn btn-outline-primary btn-sm">Manage Stock</a>
+                        </div>
                     </div>
-                    <div class="col-sm-5 text-center text-sm-end pt-sm-4 pb-sm-4">
-                        <img src="/assets/img/illustrations/card-website-analytics-1.png" alt="Website Analytics" width="170" class="img-fluid" />
+                    <div class="col-sm-5 text-center text-sm-end pt-3 pt-sm-0">
+                        <img src="/assets/img/illustrations/card-website-analytics-1.png" alt="Analytics" width="160" class="img-fluid">
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Statistics Cards -->
-    <div class="col-lg-3 col-md-6 mb-6">
-        <div class="card h-100">
-            <div class="card-body d-flex justify-content-between align-items-center">
-                <div class="card-title mb-0">
-                    <h5 class="mb-1">{{ $totalProducts }}</h5>
-                    <p class="mb-0">Total Products</p>
-                </div>
-                <div class="avatar">
-                    <span class="avatar-initial rounded bg-label-primary"><i class="ti tabler-package ti-sm"></i></span>
-                </div>
+    <!-- Quick Stats -->
+    <div class="col-xl-3 col-md-6 col-6 mb-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="badge p-2 bg-label-primary mb-3 rounded"><i class="ti tabler-currency-dollar ti-sm"></i></div>
+                <h5 class="card-title mb-1">${{ number_format($totalRevenue / 1000, 1) }}k</h5>
+                <small class="text-muted">Total Revenue</small>
             </div>
         </div>
     </div>
-    <div class="col-lg-3 col-md-6 mb-6">
-        <div class="card h-100">
-            <div class="card-body d-flex justify-content-between align-items-center">
-                <div class="card-title mb-0">
-                    <h5 class="mb-1">{{ $totalOrders }}</h5>
-                    <p class="mb-0">Total Orders</p>
-                </div>
-                <div class="avatar">
-                    <span class="avatar-initial rounded bg-label-info"><i class="ti tabler-shopping-cart ti-sm"></i></span>
-                </div>
+    <div class="col-xl-3 col-md-6 col-6 mb-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="badge p-2 bg-label-success mb-3 rounded"><i class="ti tabler-package ti-sm"></i></div>
+                <h5 class="card-title mb-1">{{ $totalProducts }}</h5>
+                <small class="text-muted">Active Products</small>
             </div>
         </div>
     </div>
-    <div class="col-lg-3 col-md-6 mb-6">
-        <div class="card h-100">
-            <div class="card-body d-flex justify-content-between align-items-center">
-                <div class="card-title mb-0">
-                    <h5 class="mb-1">${{ number_format($totalRevenue, 2) }}</h5>
-                    <p class="mb-0">Revenue</p>
-                </div>
-                <div class="avatar">
-                    <span class="avatar-initial rounded bg-label-success"><i class="ti tabler-currency-dollar ti-sm"></i></span>
-                </div>
+    <div class="col-xl-3 col-md-6 col-6 mb-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="badge p-2 bg-label-info mb-3 rounded"><i class="ti tabler-chart-bar ti-sm"></i></div>
+                <h5 class="card-title mb-1">{{ $totalOrders }}</h5>
+                <small class="text-muted">Total Orders</small>
             </div>
         </div>
     </div>
-    <div class="col-lg-3 col-md-6 mb-6">
-        <div class="card h-100">
-            <div class="card-body d-flex justify-content-between align-items-center">
-                <div class="card-title mb-0">
-                    <h5 class="mb-1 text-danger">{{ $lowStockCount }}</h5>
-                    <p class="mb-0">Low Stock Alerts</p>
-                </div>
-                <div class="avatar">
-                    <span class="avatar-initial rounded bg-label-danger"><i class="ti tabler-alert-triangle ti-sm"></i></span>
-                </div>
+    <div class="col-xl-3 col-md-6 col-6 mb-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="badge p-2 bg-label-danger mb-3 rounded"><i class="ti tabler-alert-triangle ti-sm"></i></div>
+                <h5 class="card-title mb-1 text-danger">{{ $lowStockCount }}</h5>
+                <small class="text-muted">Critical Alerts</small>
             </div>
         </div>
     </div>
 
-    <!-- Inventory Table -->
-    <div class="col-md-6 mb-6">
+    <!-- Revenue Trend Chart -->
+    <div class="col-lg-8 mb-6">
         <div class="card h-100">
             <div class="card-header d-flex justify-content-between">
-                <h5 class="card-title m-0 me-2">Recent Inventory Movements</h5>
-                <div class="dropdown">
-                    <button class="btn p-0" type="button" id="inventoryRevenue" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="ti ti-dots-vertical ti-sm text-muted"></i>
-                    </button>
-                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="inventoryRevenue">
-                        <a class="dropdown-item" href="javascript:void(0);">View All</a>
-                    </div>
-                </div>
+                <h5 class="card-title mb-0">Financial Performance (USD)</h5>
+                <small class="text-muted">Last 6 Months</small>
+            </div>
+            <div class="card-body">
+                <div id="revenueTrendChart"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nexus AI Insights -->
+    <div class="col-lg-4 mb-6">
+        <div class="card h-100 bg-gradient-primary">
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <h5 class="card-title m-0 me-2 text-white">Nexus AI Insights</h5>
+                <div class="badge bg-white text-primary">Auto-Generated</div>
             </div>
             <div class="card-body">
                 <ul class="list-unstyled mb-0">
-                    @foreach($recentProducts as $product)
-                        @foreach($product->variants as $variant)
-                            <li class="d-flex mb-4 pb-1">
-                                <div class="avatar flex-shrink-0 me-3">
-                                    <span class="avatar-initial rounded bg-label-secondary"><i class="ti tabler-box ti-sm"></i></span>
-                                </div>
-                                <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                                    <div class="me-2">
-                                        <h6 class="mb-0">{{ $product->name }}</h6>
-                                        <small class="text-muted">{{ $variant->sku }} ({{ $variant->name }})</small>
-                                    </div>
-                                    <div class="user-progress d-flex align-items-center gap-1">
-                                        <span class="badge {{ $variant->stock <= 10 ? 'bg-label-danger' : 'bg-label-success' }}">{{ $variant->stock }} in stock</span>
-                                    </div>
-                                </div>
-                            </li>
-                        @endforeach
+                    @foreach($aiInsights as $type => $insight)
+                    <li class="d-flex mb-4 pb-1 align-items-center">
+                        <div class="avatar flex-shrink-0 me-3">
+                            <span class="avatar-initial rounded bg-label-secondary text-white"><i class="ti tabler-bolt"></i></span>
+                        </div>
+                        <div class="d-flex w-100 flex-column">
+                            <small class="text-white fw-bold">{{ $type }}</small>
+                            <span class="text-white-50 small">{{ $insight }}</span>
+                        </div>
+                    </li>
                     @endforeach
                 </ul>
             </div>
         </div>
     </div>
 
-    <!-- Recent Orders -->
+    <!-- Best Selling Products -->
     <div class="col-md-6 mb-6">
         <div class="card h-100">
-            <div class="card-header d-flex justify-content-between">
-                <h5 class="card-title m-0 me-2">Recent Orders</h5>
-                <div class="dropdown">
-                    <button class="btn p-0" type="button" id="recentOrdersDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="ti ti-dots-vertical ti-sm text-muted"></i>
-                    </button>
-                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="recentOrdersDropdown">
-                        <a class="dropdown-item" href="javascript:void(0);">Transactions</a>
-                    </div>
-                </div>
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <h5 class="card-title m-0 me-2">Sales Leaderboard</h5>
             </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-borderless border-top">
-                        <thead>
-                            <tr>
-                                <th>Order ID</th>
-                                <th>Status</th>
-                                <th>Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($recentOrders as $order)
-                            <tr>
-                                <td><span class="text-body fw-medium">#{{ substr($order->id, 0, 8) }}</span></td>
-                                <td><span class="badge bg-label-info">{{ $order->status }}</span></td>
-                                <td class="text-success fw-medium">{{ $order->currency_code }} {{ number_format($order->total_amount, 2) }}</td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
+            <div class="table-responsive">
+                <table class="table table-borderless">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Category</th>
+                            <th>Total Sales</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($topSellingProducts as $product)
+                        <tr>
+                            <td>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-bold">{{ $product->name }}</span>
+                                    <small class="text-muted">{{ $product->sku }}</small>
+                                </div>
+                            </td>
+                            <td><span class="badge bg-label-secondary">Standard</span></td>
+                            <td><span class="fw-bold">{{ $product->orders_count }}</span> Orders</td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity Log -->
+    <div class="col-md-6 mb-6">
+        <div class="card h-100">
+          <div class="card-header d-flex align-items-center justify-content-between">
+            <h5 class="card-title m-0">Global Activity Feed</h5>
+          </div>
+          <div class="card-body pb-0">
+            <ul class="timeline mb-0">
+              @foreach($recentOrders as $order)
+              <li class="timeline-item timeline-item-transparent ps-4 border-left-dashed">
+                <span class="timeline-point timeline-point-primary"></span>
+                <div class="timeline-event">
+                  <div class="timeline-header mb-1">
+                    <h6 class="mb-0">Order #{{ substr($order->id, 0, 8) }} Generated</h6>
+                    <small class="text-muted">{{ $order->created_at->diffForHumans() }}</small>
+                  </div>
+                  <p class="mb-2">Total amount: {{ $order->currency_code }} {{ number_format($order->total_amount, 2) }}</p>
+                  <div class="d-flex align-items-center">
+                    <span class="badge bg-label-success">{{ $order->status }}</span>
+                  </div>
+                </div>
+              </li>
+              @endforeach
+            </ul>
+          </div>
         </div>
     </div>
 </div>
 @endsection
 
-@section('vendor-js')
-<script src="/assets/vendor/libs/apex-charts/apexcharts.js"></script>
+@section('page-js')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const revenueTrendEl = document.querySelector('#revenueTrendChart');
+    const revenueData = @json($monthlyRevenue->pluck('total'));
+    const months = @json($monthlyRevenue->pluck('month'));
+    
+    if (revenueTrendEl) {
+        const chartOptions = {
+            series: [{
+                name: 'Monthly Revenue',
+                data: revenueData
+            }],
+            chart: {
+                height: 300,
+                type: 'area',
+                toolbar: { show: false }
+            },
+            dataLabels: { enabled: false },
+            stroke: { curve: 'smooth', width: 3 },
+            colors: ['#7367f0'],
+            fill: {
+                type: 'gradient',
+                gradient: {
+                    shadeIntensity: 1,
+                    opacityFrom: 0.5,
+                    opacityTo: 0.1,
+                    stops: [0, 100]
+                }
+            },
+            xaxis: {
+                categories: months,
+                axisBorder: { show: false },
+                axisTicks: { show: false }
+            }
+        };
+        const chart = new ApexCharts(revenueTrendEl, chartOptions);
+        chart.render();
+    }
+});
+</script>
 @endsection

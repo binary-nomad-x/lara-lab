@@ -24,6 +24,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/products', [ProductController::class, 'index'])->name('products.index');
         Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
         Route::post('/products', [ProductController::class, 'store'])->name('products.store');
+        Route::post('/products/variant/{id}/adjust', [ProductController::class, 'adjustStock'])->name('products.variant.adjust');
     });
 
     // Orders
@@ -31,6 +32,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/list', [OrderController::class, 'index'])->name('list');
         Route::get('/{id}', [OrderController::class, 'show'])->name('show');
         Route::post('/{id}/pay', [OrderController::class, 'processPayment'])->name('pay');
+        Route::post('/{id}/refund', [OrderController::class, 'refund'])->name('refund');
     });
 
     // Finance

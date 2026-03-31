@@ -13,11 +13,10 @@ class ProductFactory extends Factory
     public function definition(): array
     {
         return [
-            'tenant_id' => $this->faker->word(),
-            'name' => $this->faker->name(),
-            'sku' => $this->faker->word(),
-            'description' => $this->faker->text(),
-            'created_at' => Carbon::now(),
+            'name' => $this->faker->words(3, true),
+            'sku' => $this->faker->unique()->bothify('PRD-####-????'),
+            'description' => $this->faker->paragraph(),
+            'created_at' => Carbon::now()->subDays(rand(1, 365)),
             'updated_at' => Carbon::now(),
         ];
     }

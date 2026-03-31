@@ -21,19 +21,35 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'sku' => 'nullable|string|max:255',
+            'sku' => 'nullable|string|unique:products,sku',
             'description' => 'nullable|string',
         ]);
 
-        Product::create([
+        $product = Product::create([
             'tenant_id' => auth()->user()->tenant_id,
-            'name' => $request->name,
-            'sku' => $request->sku,
-            'description' => $request->description,
+            'name' => $validated['name'],
+            'sku' => $validated['sku'] ?? 'PRD-'.rand(100, 999),
+            'description' => $validated['description'],
         ]);
 
-        return redirect()->route('inventory.products.index')->with('success', 'Product created successfully.');
+        // Audit Trail Simulation
+        // Log::info("Product created: " . $product->id);
+
+        return redirect()->route('inventory.products.index')->with('success', 'Product ' . $product->name . ' created successfully.');
+    }
+
+    public function adjustStock(Request $request, $id) {
+        $request->validate(['qty' => 'required|integer', 'note' => 'required|string']);
+        
+        $variant = Variant::findOrFail($id);
+        $oldStock = $variant->stock;
+        $variant->update(['stock' => $variant->stock + $request->qty]);
+        
+        // --- REAL STOCK MOVEMENT SIMULATION ---
+        // event(new StockWasAdjusted($variant, $oldStock, $variant->stock));
+
+        return back()->with('success', 'Stock adjusted for ' . $variant->sku . ' (New stock: ' . $variant->stock . ')');
     }
 }
