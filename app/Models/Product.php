@@ -18,4 +18,7 @@ class Product extends BaseModel {
         return $this->belongsTo(Tenant::class);
     }
 
+    public function orderItems() {
+        return $this->hasManyThrough(OrderItem::class, Variant::class);
+    }
 }

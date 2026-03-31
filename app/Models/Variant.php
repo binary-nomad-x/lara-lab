@@ -11,6 +11,10 @@ class Variant extends BaseModel {
 
     protected $guarded = ['id'];
 
+    protected $casts = [
+        'attributes' => 'json'
+    ];
+
     public function product(): BelongsTo {
         return $this->belongsTo(Product::class, 'product_id', 'id');
     }
