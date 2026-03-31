@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Web\Finance;
 use App\Http\Controllers\Controller;
 use App\Models\JournalEntry;
 use App\Models\Account;
+use App\Models\Ledger;
 use Illuminate\Http\Request;
 
 class FinanceController extends Controller
@@ -31,7 +32,7 @@ class FinanceController extends Controller
             'debit' => $request->debit ?? 0,
             'credit' => $request->credit ?? 0,
             'description' => $request->description,
-            'ledger_id' => \App\Models\Ledger::first()->id ?? null, // Simplification
+            'ledger_id' => Ledger::first()->id ?? null, // Simplification
         ]);
 
         return back()->with('success', 'Journal entry recorded successfully.');

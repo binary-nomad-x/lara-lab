@@ -48,7 +48,8 @@ class Todo extends Model {
         }
 
         if ($request->has('search')) {
-            $query->where(function ($q) use ($request) {
+            $query->where(function ($q) use ($request)protected $fillable = [
+            ]; {
                 $q->where('title', 'like', '%' . $request->search . '%')
                     ->orWhere('description', 'like', '%' . $request->search . '%');
             });
