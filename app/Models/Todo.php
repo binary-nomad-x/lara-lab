@@ -8,15 +8,6 @@ use Illuminate\Http\Request;
 
 class Todo extends Model {
 
-    protected $fillable = [
-        'title',
-        'description',
-        'completed',
-        'user_id',
-        'due_date',
-        'priority',
-    ];
-
     protected $casts = [
         'completed' => 'boolean',
         'due_date' => 'datetime',

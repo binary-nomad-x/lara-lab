@@ -8,14 +8,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Tenant extends BaseModel {
     use HasFactory, HasUuids;
 
-    protected $fillable = [
-        'name',
-        'slug',
-        'is_active',
-    ];
-
-    protected $guarded = ['id'];
-
     public function users() {
         return $this->hasMany(User::class);
     }

@@ -8,13 +8,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Order extends BaseModel {
     use HasFactory, HasUuids;
 
-    protected $fillable = [
-        'tenant_id',
-        'status',
-        'currency_code',
-        'total_amount',
-    ];
-
     public function items() {
         return $this->hasMany(OrderItem::class);
     }

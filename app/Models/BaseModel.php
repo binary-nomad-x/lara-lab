@@ -8,8 +8,8 @@ use Illuminate\Support\Str;
 
 class BaseModel extends Model {
 
-    protected $guarded = ['id'];
     public $incrementing = false;
+    protected $guarded = ['id'];
     protected $keyType = 'string';
 
     protected static function booted(): void {
