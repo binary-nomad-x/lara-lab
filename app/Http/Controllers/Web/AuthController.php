@@ -25,8 +25,7 @@ class AuthController extends Controller {
     public function register(Request $request) {
         $validated = $request->validate([
             'tenant_name' => 'required|string|max:255',
-            'domain' => 'required|string|unique:domains,domain',
-            'user_name' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8|confirmed',
         ]);
@@ -49,24 +48,33 @@ class AuthController extends Controller {
 
             Domain::create([
                 'tenant_id' => $tenant->id,
-                'domain' => $validated['domain'],
+                'domain' => $slug . '.nexuseiams.com',
                 'is_primary' => true,
             ]);
 
             $user = User::create([
                 'tenant_id' => $tenant->id,
-                'name' => $validated['user_name'],
+                'name' => $validated['name'],
                 'email' => $validated['email'],
                 'password' => Hash::make($validated['password']),
             ]);
 
+            $user->assignRole('Owner');
+
             DB::commit();
+
+            // Send notification
+            try {
+                $user->notify(new \App\Notifications\WelcomeTenantNotification($tenant));
+            } catch (\Exception $e) {
+                // Silently fail if mail server not setup
+            }
 
             Auth::login($user);
             return redirect('/dashboard')->with('success', 'Registration successful! Welcome to Nexus EIAMS.');
         } catch (Exception $e) {
             DB::rollBack();
-            return back()->withErrors(['error' => 'Registration failed: ' . $e->getMessage()]);
+            return back()->withErrors(['error' => 'Registration failed: ' . $e->getMessage()])->withInput();
         }
     }
 

@@ -8,13 +8,28 @@ use App\Models\Product;
 
 class DashboardController extends Controller {
     public function index() {
-        // Get products with their total stock logic 
-        $products = Product::with('variants.stockMovements')->latest()->take(5)->get();
+        $user = auth()->user();
+        $tenant = $user->tenant;
 
-        $orders = Order::with('items')->latest()->take(5)->get();
-        // Since we have global scoping on BaseModel, it only fetches the auth user's tenant data
-        $tenant = auth()->user()->tenant;
+        // Statistics
+        $totalProducts = Product::count();
+        $totalOrders = Order::count();
+        $totalRevenue = Order::where('status', 'Confirmed')->sum('total_amount');
+        $lowStockCount = Product::with('variants')->get()->filter(function($p) {
+            return $p->variants->any(fn($v) => $v->stock <= 10);
+        })->count();
 
-        return view('dashboard', compact('products', 'orders', 'tenant'));
+        $recentProducts = Product::with('variants.stockMovements')->latest()->take(5)->get();
+        $recentOrders = Order::latest()->take(5)->get();
+
+        return view('dashboard', compact(
+            'tenant', 
+            'totalProducts', 
+            'totalOrders', 
+            'totalRevenue', 
+            'lowStockCount',
+            'recentProducts',
+            'recentOrders'
+        ));
     }
 }

@@ -1,36 +1,68 @@
-@extends('layouts.app')
+@extends('layouts.blank')
 
 @section('title', 'Login')
 
 @section('content')
-<div class="row justify-content-center">
-    <div class="col-md-5">
-        <div class="card shadow-sm border-0 mt-5">
-            <div class="card-body p-4">
-                <h3 class="card-title text-center mb-4 text-dark">Nexus Login</h3>
-                <form action="{{ url('/login') }}" method="POST">
-                    @csrf
-                    <div class="mb-3">
-                        <label for="email" class="form-label text-secondary">Email Address</label>
-                        <input type="email" class="form-control" id="email" name="email" value="{{ old('email') }}" required autofocus>
-                    </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label text-secondary">Password</label>
-                        <input type="password" class="form-control" id="password" name="password" required>
-                    </div>
-                    <div class="mb-3 form-check">
-                        <input type="checkbox" class="form-check-input" id="remember" name="remember">
-                        <label class="form-check-label text-secondary" for="remember">Remember me</label>
-                    </div>
-                    <div class="d-grid mt-4">
-                        <button type="submit" class="btn btn-primary fw-bold">Sign In</button>
-                    </div>
-                    <div class="mt-3 text-center">
-                        <a href="{{ url('/register') }}" class="text-decoration-none">Create new tenant account</a>
-                    </div>
-                </form>
+<div class="container-xxl">
+  <div class="authentication-wrapper authentication-basic container-p-y">
+    <div class="authentication-inner py-6">
+      <div class="card">
+        <div class="card-body">
+          <div class="app-brand justify-content-center mb-6">
+            <a href="/" class="app-brand-link">
+              <span class="app-brand-logo demo">
+                <span class="text-primary">
+                    <svg width="32" height="22" viewBox="0 0 32 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M0.00172773 0V6.85398C0.00172773 6.85398 -0.133178 9.01207 1.98092 10.8388L13.6912 21.9964L19.7809 21.9181L18.8042 9.88248L16.4951 7.17289L9.23799 0H0.00172773Z" fill="currentColor" />
+                        <path opacity="0.06" fill-rule="evenodd" clip-rule="evenodd" d="M7.69824 16.4364L12.5199 3.23696L16.5541 7.25596L7.69824 16.4364Z" fill="#161616" />
+                        <path opacity="0.06" fill-rule="evenodd" clip-rule="evenodd" d="M8.07751 15.9175L13.9419 4.63989L16.5849 7.28475L8.07751 15.9175Z" fill="#161616" />
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M7.77295 16.3566L23.6563 0H32V6.88383C32 6.88383 31.8262 9.17836 30.6591 10.4057L19.7824 22H13.6938L7.77295 16.3566Z" fill="currentColor" />
+                    </svg>
+                </span>
+              </span>
+              <span class="app-brand-text demo text-heading fw-bold">Nexus EIAMS</span>
+            </a>
+          </div>
+          <h4 class="mb-1">Access Nexus Core 👋</h4>
+          <p class="mb-6">Please sign-in to your tenant account</p>
+
+          <form id="formAuthentication" class="mb-4" action="{{ url('/login') }}" method="POST">
+            @csrf
+            <div class="mb-6 form-control-validation">
+                <label for="email" class="form-label">Email or Username</label>
+                <input type="text" class="form-control" id="email" name="email" placeholder="Enter your email" autofocus />
+                @error('email') <small class="text-danger">{{ $message }}</small> @enderror
             </div>
+            <div class="mb-6 form-password-toggle form-control-validation">
+              <label class="form-label" for="password">Password</label>
+              <div class="input-group input-group-merge">
+                <input type="password" id="password" class="form-control" name="password" placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;" />
+                <span class="input-group-text cursor-pointer"><i class="ti tabler-eye-off"></i></span>
+              </div>
+              @error('password') <small class="text-danger">{{ $message }}</small> @enderror
+            </div>
+            <div class="my-8">
+              <div class="d-flex justify-content-between text-nowrap">
+                <div class="form-check mb-0 ms-2">
+                  <input class="form-check-input" type="checkbox" id="remember-me" name="remember" />
+                  <label class="form-check-label" for="remember-me"> Remember Me </label>
+                </div>
+              </div>
+            </div>
+            <div class="mb-6">
+              <button class="btn btn-primary d-grid w-100" type="submit">Sign in</button>
+            </div>
+          </form>
+
+          <p class="text-center">
+            <span>New on our platform?</span>
+            <a href="{{ url('/register') }}">
+              <span>Create an account</span>
+            </a>
+          </p>
         </div>
+      </div>
     </div>
+  </div>
 </div>
 @endsection
