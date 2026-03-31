@@ -5,15 +5,13 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class DatabaseSeeder extends Seeder
-{
+class DatabaseSeeder extends Seeder {
     use WithoutModelEvents;
 
-    public function run(): void
-    {
+    public function run(): void {
 
-        // $this->call(UsersSeeder::class);
         $this->call(RoleSeeder::class);
+        $this->call(UsersSeeder::class);
         $this->call(NexusDataSeeder::class);
 
     }

@@ -13,14 +13,12 @@ class AuditLogFactory extends Factory
     public function definition(): array
     {
         return [
-            'tenant_id' => $this->faker->word(),
-            'user_id' => $this->faker->randomNumber(),
-            'action' => $this->faker->word(),
-            'table_name' => $this->faker->name(),
-            'payload_before' => $this->faker->words(),
-            'payload_after' => $this->faker->words(),
+            'action' => $this->faker->randomElement(['CREATE', 'UPDATE', 'DELETE', 'LOGIN']),
+            'table_name' => $this->faker->randomElement(['products', 'orders', 'users', 'variants']),
+            'payload_before' => json_encode(['old_value' => $this->faker->word]),
+            'payload_after' => json_encode(['new_value' => $this->faker->word]),
             'ip_address' => $this->faker->ipv4(),
-            'created_at' => Carbon::now(),
+            'created_at' => Carbon::now()->subDays(rand(1, 30)),
             'updated_at' => Carbon::now(),
         ];
     }

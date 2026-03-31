@@ -63,6 +63,8 @@ return new class extends Migration {
             $table->string('sku')->unique();
             $table->decimal('price', 19, 4);
             $table->decimal('cost', 19, 4)->nullable();
+            $table->integer('stock')->default(0);
+            $table->jsonb('attributes')->nullable();
             $table->timestamps();
             $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade');
             $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
@@ -100,6 +102,7 @@ return new class extends Migration {
             $table->string('status'); // Draft, Confirmed, etc.
             $table->decimal('total_amount', 19, 4)->default(0);
             $table->string('currency_code', 3)->default('USD');
+            $table->text('notes')->nullable();
             $table->jsonb('snapshot')->nullable();
             $table->timestamps();
             $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade');
@@ -132,6 +135,7 @@ return new class extends Migration {
             $table->uuid('id')->primary();
             $table->uuid('tenant_id');
             $table->string('name');
+            $table->string('code')->nullable();
             $table->string('type'); // Asset, Liability, Equity, Revenue, Expense
             $table->timestamps();
             $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade');
@@ -141,6 +145,7 @@ return new class extends Migration {
             $table->uuid('id')->primary();
             $table->uuid('tenant_id');
             $table->string('name');
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
             $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade');
         });
