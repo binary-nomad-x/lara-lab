@@ -31,12 +31,12 @@ class DashboardController extends Controller {
         $topSellingProducts = Product::with(['variants'])
             ->withCount('orders')
             ->orderBy('orders_count', 'desc')
-            ->take(5)
+            ->take(20)
             ->get();
 
         // --- RECENT ACTIVITY ---
-        $recentProducts = Product::with('variants')->latest()->take(5)->get();
-        $recentOrders = Order::latest()->take(5)->get();
+        $recentProducts = Product::with('variants')->latest()->take(20)->get();
+        $recentOrders = Order::latest()->take(20)->get();
 
         // --- DUMMY AI INSIGHTS ---
         $aiInsights = [

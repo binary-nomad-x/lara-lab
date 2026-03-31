@@ -112,7 +112,7 @@
             <div class="card-header d-flex align-items-center justify-content-between">
                 <h5 class="card-title m-0 me-2">Sales Leaderboard</h5>
             </div>
-            <div class="table-responsive">
+            <div class="table-responsive card-body" style="max-height: 400px; overflow-y: auto;">
                 <table class="table table-borderless">
                     <thead>
                         <tr>
@@ -146,7 +146,7 @@
           <div class="card-header d-flex align-items-center justify-content-between">
             <h5 class="card-title m-0">Global Activity Feed</h5>
           </div>
-          <div class="card-body pb-0">
+          <div class="card-body pb-0" style="max-height: 400px; overflow-y: auto;">
             <ul class="timeline mb-0">
               @foreach($recentOrders as $order)
               <li class="timeline-item timeline-item-transparent ps-4 border-left-dashed">
