@@ -11,7 +11,7 @@ class DashboardController extends Controller {
         $user = auth()->user();
         if (!$user) return redirect()->route('login');
 
-        $tenant = $user->tenant;
+        $tenant = $user->tenant();
 
         // --- CORE STATISTICS ---
         $totalProducts = Product::count();

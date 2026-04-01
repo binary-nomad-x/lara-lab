@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Domain;
 use App\Models\Tenant;
 use App\Models\User;
+use App\Notifications\WelcomeTenantNotification;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -65,8 +66,8 @@ class AuthController extends Controller {
 
             // Send notification
             try {
-                $user->notify(new \App\Notifications\WelcomeTenantNotification($tenant));
-            } catch (\Exception $e) {
+                $user->notify(new WelcomeTenantNotification($tenant));
+            } catch (Exception $e) {
                 // Silently fail if mail server not setup
             }
 
