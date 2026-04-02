@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Models;
+namespace App\Abstracts;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
-class BaseModel extends Model {
+abstract class BaseModel extends Model {
 
     public $incrementing = false;
     protected $guarded = ['id'];

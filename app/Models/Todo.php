@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Abstracts\BaseModel;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\Request;

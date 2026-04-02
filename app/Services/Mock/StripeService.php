@@ -403,4 +403,128 @@ class StripeService {
         return array_merge_recursive($promotionCode, $overrides);
     }
 
+    /**
+     * Generates a realistic Stripe Pricing Plan mock object.
+     *
+     * @param array $overrides Custom values to override defaults
+     * @return array
+     */
+    public function generatePricingPlan(array $overrides = []): array {
+        $planId = 'plan_' . Str::random(24);
+
+        $plan = [
+            'id' => $planId,
+            'object' => 'plan',
+            'active' => true,
+            'amount' => $overrides['amount'] ?? rand(500, 50000),
+            'currency' => $overrides['currency'] ?? 'usd',
+            'interval' => $overrides['interval'] ?? 'month',
+            'interval_count' => $overrides['interval_count'] ?? 1,
+            'nickname' => $overrides['nickname'] ?? 'Pro Plan',
+            'product' => 'prod_' . Str::random(24),
+            'trial_period_days' => $overrides['trial_period_days'] ?? null,
+            'usage_type' => $overrides['usage_type'] ?? 'licensed',
+            'billing_scheme' => $overrides['billing_scheme'] ?? 'per_unit',
+            'created' => now()->timestamp,
+            'livemode' => false,
+            'metadata' => [],
+            'tiers_mode' => null,
+            'transform_quantity' => null,
+        ];
+
+        return array_merge_recursive($plan, $overrides);
+    }
+
+    /**
+     * Generates a realistic Stripe Customer Portal Session mock object.
+     *
+     * @param array $overrides Custom values to override defaults
+     * @return array
+     */
+    public function generateCustomerPortalSession(array $overrides = []): array {
+        $sessionId = 'cs_' . Str::random(24);
+        $customerId = 'cus_' . Str::random(14);
+
+        $session = [
+            'id' => $sessionId,
+            'object' => 'customer_portal_session',
+            'configuration' => 'bpc_' . Str::random(24),
+            'customer' => $customerId,
+            'flow' => 'login_and_access_portal',
+            'locale' => 'en',
+            'on_behalf_of' => null,
+            'return_url' => 'https://your-app.com/dashboard',
+            'url' => 'https://billing.stripe.com/session/' . Str::random(20),
+            'created' => now()->timestamp,
+            'expires_at' => now()->addHours(1)->timestamp,
+            'livemode' => false,
+            'metadata' => [],
+        ];
+
+        return array_merge_recursive($session, $overrides);
+    }
+
+    /**
+     * Generates a realistic Stripe Webhook Event mock object.
+     *
+     * @param array $overrides Custom values to override defaults
+     * @return array
+     */
+    public function generateWebhookEvent(array $overrides = []): array {
+        $eventId = 'evt_' . Str::random(24);
+
+        $event = [
+            'id' => $eventId,
+            'object' => 'event',
+            'api_version' => '2022-11-15',
+            'created' => now()->timestamp,
+            'data' => [
+                'object' => $overrides['data_object'] ?? [
+                        'id' => 'sub_' . Str::random(24),
+                        'object' => 'subscription',
+                        'status' => 'active',
+                        'customer' => 'cus_' . Str::random(14),
+                    ],
+            ],
+            'livemode' => false,
+            'pending_webhooks' => 0,
+            'request' => [
+                'id' => 'req_' . Str::random(24),
+                'idempotency_key' => null,
+            ],
+            'type' => $overrides['type'] ?? 'customer.subscription.created',
+        ];
+
+        return array_merge_recursive($event, $overrides);
+    }
+
+    /**
+     * Generates a realistic Stripe Revenue Recovery Report mock object.
+     *
+     * @param array $overrides Custom values to override defaults
+     * @return array
+     */
+    public function generateRevenueRecoveryReport(array $overrides = []): array {
+        $reportId = 'rep_' . Str::random(24);
+
+        $report = [
+            'id' => $reportId,
+            'object' => 'report',
+            'title' => 'Revenue Recovery Analytics',
+            'description' => 'Insights into recovered revenue using Smart Retries.',
+            'start_date' => now()->subMonths(3)->toDateString(),
+            'end_date' => now()->toDateString(),
+            'metrics' => [
+                'total_recovered_amount' => $overrides['total_recovered_amount'] ?? rand(1000, 50000),
+                'total_attempts' => $overrides['total_attempts'] ?? rand(100, 500),
+                'success_rate' => $overrides['success_rate'] ?? rand(70, 95) / 100,
+            ],
+            'created' => now()->timestamp,
+            'livemode' => false,
+            'metadata' => [],
+        ];
+
+        return array_merge_recursive($report, $overrides);
+    }
+
 }
