@@ -9,13 +9,13 @@ use Illuminate\Support\Str;
 abstract class BaseModel extends Model {
 
     public $incrementing = false;
-    protected $guarded = ['id'];
     protected $keyType = 'string';
 
+    // Guarded mein ID rakhna achi baat hai
+    protected $guarded = ['id'];
+
     protected static function booted(): void {
-        // For CLI or initial migration this might fail if not careful,
-        // but let's assume `tenant_id` scoping logic here.
-        // For Enterprise SaaS, we can use a session variable or auth()->user()->tenant_id
+        // Multi-tenancy Global Scope
         static::addGlobalScope('tenant', static function (Builder $builder) {
             if (auth()->check() && auth()->user()->tenant_id) {
                 $builder->where('tenant_id', auth()->user()->tenant_id);
@@ -23,9 +23,17 @@ abstract class BaseModel extends Model {
         });
 
         static::creating(static function (Model $model) {
-            $model->id = Str::uuid7();  // todo : this is not correctly formed uuid, we have to use something else
-            if (auth()->check() && auth()->user()->tenant_id && in_array('tenant_id', $model->getFillable()) && empty($model->tenant_id)) {
-                $model->tenant_id = auth()->user()->tenant_id;
+            // 1. UUID v7 / Ordered UUID Fix
+            // Agar model 'HasUuids' trait use nahi kar raha, to ye line kaam karegi
+            if (empty($model->{$model->getKeyName()})) {
+                $model->{$model->getKeyName()} = (string)Str::orderedUuid();
+            }
+
+            // 2. Tenant ID Auto-fill
+            // Behtar check: check if column exists in table
+            if (auth()->check() && auth()->user()->tenant_id) {
+                // Column check handle karne ka behtar tareeka
+                $model->tenant_id = $model->tenant_id ?? auth()->user()->tenant_id;
             }
         });
     }
