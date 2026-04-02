@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Mock;
 
 use Illuminate\Support\Str;
 
-class MockStripeService {
+class StripeService {
 
     public function __construct() {
     }
 
     /**
-     * Generates a realistic Stripe Transaction (Charge/PaymentIntent) mock object.
+     * Generates a realistic StripeService Transaction (Charge/PaymentIntent) mock object.
      *
      * @param array $overrides Custom values to override defaults
      * @return array
@@ -20,7 +20,7 @@ class MockStripeService {
         $amount = $overrides['amount'] ?? rand(500, 50000); // Amount in cents ($5.00 - $500.00)
         $currency = $overrides['currency'] ?? 'usd';
         $status = $overrides['status'] ?? 'succeeded';
-        $id = 'ch_' . Str::random(24); // Stripe ID format
+        $id = 'ch_' . Str::random(24); // StripeService ID format
         $customerId = 'cus_' . Str::random(14);
 
         // Realistic Card Brands & Last4
@@ -31,7 +31,7 @@ class MockStripeService {
         ];
         $card = $cards[array_rand($cards)];
 
-        // Base Structure mimicking Stripe's API Response (V1)
+        // Base Structure mimicking StripeService's API Response (V1)
         $transaction = [
             'id' => $id,
             'object' => 'charge',

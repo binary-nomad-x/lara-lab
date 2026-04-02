@@ -2,6 +2,7 @@
 
 namespace App\Events;
 
+use App\Facades\MockStripeService;
 use App\Models\Order;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
@@ -15,6 +16,11 @@ class OrderPaid implements ShouldBroadcastNow {
     public Order $order;
 
     public function __construct(Order $order) {
+
+
+        MockStripeService::generateTransaction();
+
+
         $this->order = $order;
     }
 

@@ -5,10 +5,10 @@ namespace App\Facades;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @see \App\Services\MockStripeService
+ * @see \App\Services\Mock\StripeService
  */
 class MockStripeService extends Facade {
     protected static function getFacadeAccessor(): string {
-        return \App\Services\MockStripeService::class;
+        return \App\Services\Mock\StripeService::class;
     }
 }
