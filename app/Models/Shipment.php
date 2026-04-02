@@ -8,6 +8,4 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Shipment extends BaseModel {
     use HasFactory, HasUuids;
-
-    //
 }
