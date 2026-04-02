@@ -25,14 +25,14 @@ class NexusDataSeeder extends Seeder {
 
         // 1. Create Main Tenant
         $mainTenant = Tenant::create([
-            'id' => (string)Str::uuid(),
+            'id' => (string)Str::orderedUuid(),
             'name' => 'Nexus Global Industries',
             'slug' => 'nexus-global',
             'is_active' => true,
         ]);
 
         Domain::create([
-            'id' => (string)Str::uuid(),
+            'id' => (string)Str::orderedUuid(),
             'tenant_id' => $mainTenant->id,
             'domain' => 'nexus-global.nexuseiams.com',
             'is_primary' => true,
@@ -41,7 +41,7 @@ class NexusDataSeeder extends Seeder {
         setPermissionsTeamId($mainTenant->id);
 
         User::create([
-            'id' => (string)Str::uuid(),
+            'id' => (string)Str::orderedUuid(),
             'tenant_id' => $mainTenant->id,
             'name' => 'System Administrator',
             'email' => 'admin@nexus.com',
@@ -61,7 +61,7 @@ class NexusDataSeeder extends Seeder {
         $productIds = [];
         $pData = [];
         for ($i = 0; $i < $countProducts; $i++) {
-            $id = (string)Str::uuid();
+            $id = (string)Str::orderedUuid();
             $productIds[] = $id;
             $pData[] = [
                 'id' => $id,
@@ -91,7 +91,7 @@ class NexusDataSeeder extends Seeder {
         $variantIds = [];
         $vData = [];
         for ($i = 0; $i < $countVariants; $i++) {
-            $id = (string)Str::uuid();
+            $id = (string)Str::orderedUuid();
             $variantIds[] = $id;
             $vData[] = [
                 'id' => $id,
@@ -119,7 +119,7 @@ class NexusDataSeeder extends Seeder {
         // 2.3 Financial Setup
         $this->command->info("Setting up Accounts and Ledger");
         $ledger = Ledger::create([
-            'id' => (string)Str::uuid(),
+            'id' => (string)Str::orderedUuid(),
             'tenant_id' => $mainTenant->id,
             'name' => 'Nexus Operating Ledger',
             'is_active' => true,
@@ -129,7 +129,7 @@ class NexusDataSeeder extends Seeder {
         $types = ['Asset', 'Liability', 'Equity', 'Revenue', 'Expense'];
         foreach (range(1, 100) as $i) {
             $accs[] = Account::create([
-                'id' => (string)Str::uuid(),
+                'id' => (string)Str::orderedUuid(),
                 'tenant_id' => $mainTenant->id,
                 'name' => 'Bulk Account ' . $i,
                 'code' => 'ACC-' . $i,
@@ -146,7 +146,7 @@ class NexusDataSeeder extends Seeder {
         $orderIds = [];
         $orderData = [];
         for ($i = 0; $i < $countOrders; $i++) {
-            $id = (string)Str::uuid();
+            $id = (string)Str::orderedUuid();
             $orderIds[] = $id;
             $orderData[] = [
                 'id' => $id,
@@ -179,7 +179,7 @@ class NexusDataSeeder extends Seeder {
         for ($i = 0; $i < $countItems; $i++) {
             $lineTotal = rand(50, 2000);
             $itemsData[] = [
-                'id' => (string)Str::uuid(),
+                'id' => (string)Str::orderedUuid(),
                 'tenant_id' => $mainTenant->id,
                 'order_id' => $orderIds[array_rand($orderIds)],
                 'variant_id' => $variantIds[array_rand($variantIds)],
@@ -192,7 +192,7 @@ class NexusDataSeeder extends Seeder {
 
             // Journal Entry chunk (Debit)
             $journalData[] = [
-                'id' => (string)Str::uuid(),
+                'id' => (string)Str::orderedUuid(),
                 'tenant_id' => $mainTenant->id,
                 'ledger_id' => $ledger->id,
                 'account_id' => $accs[array_rand($accs)]->id,
