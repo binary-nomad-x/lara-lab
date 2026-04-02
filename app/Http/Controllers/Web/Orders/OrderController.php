@@ -6,16 +6,20 @@ use App\Events\OrderPaid;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class OrderController extends Controller {
-    public function index() {
-        $orders = Order::latest()->paginate(10);
-        return view('orders.list.index', compact('orders'));
+
+    public function index(Request $request) {
+        return view('orders.list.index', [
+            'orders' => Order::latest()->paginate($request->input('pagination_size', 10))
+        ]);
     }
 
     public function show($id) {
-        $order = Order::with('items.variant.product')->findOrFail($id);
-        return view('orders.list.show', compact('order'));
+        return view('orders.list.show', [
+            'order' => Order::with('items.variant.product')->findOrFail($id)
+        ]);
     }
 
     public function processPayment(Request $request, $id) {
@@ -29,6 +33,7 @@ class OrderController extends Controller {
         // Mimicking a 2-second network delay
         // Artisan::call('some-ping'); // just dummy to take time
 
+        // todo : if payment api hit , get the boolean of response
         $success = rand(1, 10) > 1; // 90% success rate
 
         if ($success) {
@@ -54,7 +59,10 @@ class OrderController extends Controller {
             return back()->with('error', 'Only confirmed orders can be refunded.');
         }
 
-        $order->update(['status' => 'Cancelled', 'notes' => 'Refund processed ' . now()]);
+        $order->update([
+            'status' => 'Cancelled',
+            'notes' => 'Refund processed ' . now()
+        ]);
 
         return back()->with('success', 'Order #' . substr($order->id, 0, 8) . ' has been refunded.');
     }

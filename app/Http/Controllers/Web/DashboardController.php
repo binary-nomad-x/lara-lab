@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Product;
+use Illuminate\Http\Request;
 
 class DashboardController extends Controller {
-    public function index() {
+
+    public function index(Request $request) {
         $user = auth()->user();
         if (!$user) return redirect()->route('login');
 
@@ -17,15 +19,16 @@ class DashboardController extends Controller {
         $totalProducts = Product::count();
         $totalOrders = Order::count();
         $totalRevenue = Order::whereIn('status', ['Confirmed', 'Completed'])->sum('total_amount');
+        $itemsCount = $request->input('items_count', 20);
 
         // Stock Health (Correcting collection logic)
-        $lowStockCount = Product::whereHas('variants', function ($q) {
-            $q->where('stock', '<=', 10);
+        $lowStockCount = Product::whereHas('variants', function ($q) use ($request) {
+            $q->where('stock', '<=', $request->input('low_stock_when_count', 10));
         })->count();
 
         // --- TRENDS (MONTHLY REVENUE) - Postgres Compatible ---
         $monthlyRevenue = Order::whereIn('status', ['Confirmed', 'Completed'])
-            ->where('created_at', '>=', now()->subMonths(6))
+            ->where('created_at', '>=', now()->subMonths($request->input('previous_months_limit_for_revenue', 6)))
             ->selectRaw('SUM(total_amount) as total, to_char(created_at, \'MM\') as month')
             ->groupBy('month')
             ->orderBy('month')
@@ -35,12 +38,12 @@ class DashboardController extends Controller {
         $topSellingProducts = Product::with(['variants'])
             ->withCount('orderItems') // products don't have orders directly in some schemas, using items
             ->orderBy('order_items_count', 'desc')
-            ->take(20)
+            ->take($itemsCount)
             ->get();
 
         // --- RECENT ACTIVITY ---
-        $recentProducts = Product::with('variants')->latest()->take(20)->get();
-        $recentOrders = Order::latest()->take(20)->get();
+        $recentProducts = Product::with('variants')->latest()->take($itemsCount)->get();
+        $recentOrders = Order::latest()->take($itemsCount)->get();
 
         // --- EXTENDED AI INSIGHTS ---
         $aiInsights = [

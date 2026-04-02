@@ -23,7 +23,7 @@ class BaseModel extends Model {
         });
 
         static::creating(static function (Model $model) {
-            $model->id = Str::uuid7();
+            $model->id = Str::uuid7();  // todo : this is not correctly formed uuid, we have to use something else
             if (auth()->check() && auth()->user()->tenant_id && in_array('tenant_id', $model->getFillable()) && empty($model->tenant_id)) {
                 $model->tenant_id = auth()->user()->tenant_id;
             }

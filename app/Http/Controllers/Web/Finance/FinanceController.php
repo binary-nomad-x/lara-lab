@@ -9,13 +9,16 @@ use App\Models\Ledger;
 use Illuminate\Http\Request;
 
 class FinanceController extends Controller {
-    public function index() {
-        $entries = JournalEntry::with(['account'])->latest()->paginate(10);
-        $accounts = Account::all();
-        return view('finance.ledger.index', compact('entries', 'accounts'));
+
+    public function index(Request $request) {
+        return view('finance.ledger.index', [
+            'journal_entries' => JournalEntry::with(['account'])->latest()->paginate($request->input('pagination_size', 10)),
+            'accounts' => Account::get()
+        ]);
     }
 
     public function store(Request $request) {
+
         $request->validate([
             'account_id' => 'required|exists:accounts,id',
             'debit' => 'required_without:credit|numeric|min:0',

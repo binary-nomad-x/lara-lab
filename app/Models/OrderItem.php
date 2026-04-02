@@ -8,8 +8,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class OrderItem extends BaseModel {
     use HasFactory, HasUuids;
 
-    //
-
     public function order() {
         return $this->belongsTo(Order::class);
     }

@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\Request;
 
-class Todo extends Model {
+class Todo extends BaseModel {
 
     protected $casts = [
         'completed' => 'boolean',
@@ -17,24 +17,29 @@ class Todo extends Model {
         return $this->belongsTo(User::class);
     }
 
-    public function scopeCompleted($query) {
+    #[Scope]
+    protected function completed($query) {
         return $query->where('completed', true);
     }
 
-    public function scopePending($query) {
+    #[Scope]
+    protected function pending($query) {
         return $query->where('completed', false);
     }
 
-    public function scopeByPriority($query, $priority = 'high') {
+    #[Scope]
+    protected function byPriority($query, $priority = 'high') {
         return $query->where('priority', $priority);
     }
 
-    public function scopeDueSoon($query, $days = 3) {
+    #[Scope]
+    protected function dueSoon($query, $days = 3) {
         return $query->where('due_date', '<=', now()->addDays($days))
             ->where('due_date', '>=', now());
     }
 
-    public function scopeWithFilters($query, Request $request) {
+    #[Scope]
+    protected function withFilters($query, Request $request) {
         if ($request->has('status')) {
             if ($request->status === 'completed') {
                 $query->completed();
@@ -48,10 +53,10 @@ class Todo extends Model {
         }
 
         if ($request->has('search')) {
-            $query->where(function ($q) use ($request)protected $fillable = [
-            ]; {
-                $q->where('title', 'like', '%' . $request->search . '%')
-                    ->orWhere('description', 'like', '%' . $request->search . '%');
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', '%' . $search . '%')
+                    ->orWhere('description', 'like', '%' . $search . '%');
             });
         }
 

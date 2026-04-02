@@ -6,11 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\Variant;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller {
-    public function index() {
-        $products = Product::with(['variants'])->paginate(10);
-        return view('inventory.products.index', compact('products'));
+
+    public function index(Request $request) {
+        return view('inventory.products.index', [
+            'products' => Product::with(['variants'])->paginate($request->input('pagination_length' ?? 10))
+        ]);
     }
 
     public function store(Request $request) {
@@ -34,7 +37,10 @@ class ProductController extends Controller {
     }
 
     public function create() {
-        return view('inventory.products.create');
+        return view('inventory.products.create', [
+            'variants' => Variant::pluck('id', 'name')->toArray(),
+            'owner_id' => Auth::id()
+        ]);
     }
 
     public function adjustStock(Request $request, $id) {
