@@ -2,7 +2,7 @@
 
 namespace App\Events;
 
-use App\Facades\MockStripeService;
+use App\Facades\Mock\Stripe;
 use App\Models\Order;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
@@ -18,7 +18,7 @@ class OrderPaid implements ShouldBroadcastNow {
     public function __construct(Order $order) {
 
 
-        MockStripeService::generateTransaction();
+        Stripe::generateTransaction();
 
 
         $this->order = $order;
