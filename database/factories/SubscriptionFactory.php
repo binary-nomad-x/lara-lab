@@ -6,12 +6,10 @@ use App\Models\Subscription;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Carbon;
 
-class SubscriptionFactory extends Factory
-{
+class SubscriptionFactory extends Factory {
     protected $model = Subscription::class;
 
-    public function definition(): array
-    {
+    public function definition(): array {
         return [
             'tenant_id' => $this->faker->word(),
             'plan_name' => $this->faker->name(),

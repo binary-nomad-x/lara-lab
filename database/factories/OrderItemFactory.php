@@ -6,12 +6,10 @@ use App\Models\OrderItem;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Carbon;
 
-class OrderItemFactory extends Factory
-{
+class OrderItemFactory extends Factory {
     protected $model = OrderItem::class;
 
-    public function definition(): array
-    {
+    public function definition(): array {
         return [
             'tenant_id' => $this->faker->word(),
             'order_id' => $this->faker->word(),

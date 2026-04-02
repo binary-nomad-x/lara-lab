@@ -8,10 +8,9 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Schema;
 
-class UsersSeeder extends Seeder
-{
-    public function run(): void
-    {
+class UsersSeeder extends Seeder {
+
+    public function run(): void {
 
         $currentDateTime = now()->format('Y-m-d H:i:s');
         $count = 200;

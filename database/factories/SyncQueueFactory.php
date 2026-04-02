@@ -6,12 +6,10 @@ use App\Models\SyncQueue;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Carbon;
 
-class SyncQueueFactory extends Factory
-{
+class SyncQueueFactory extends Factory {
     protected $model = SyncQueue::class;
 
-    public function definition(): array
-    {
+    public function definition(): array {
         return [
             'tenant_id' => $this->faker->word(),
             'device_id' => $this->faker->word(),

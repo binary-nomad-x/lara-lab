@@ -6,12 +6,10 @@ use App\Models\Variant;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Carbon;
 
-class VariantFactory extends Factory
-{
+class VariantFactory extends Factory {
     protected $model = Variant::class;
 
-    public function definition(): array
-    {
+    public function definition(): array {
         $attributes = ['Color' => $this->faker->safeColorName, 'Size' => $this->faker->randomElement(['S', 'M', 'L', 'XL'])];
         return [
             'sku' => $this->faker->unique()->bothify('SKU-####-????'),

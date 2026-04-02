@@ -6,12 +6,10 @@ use App\Models\Ledger;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Carbon;
 
-class LedgerFactory extends Factory
-{
+class LedgerFactory extends Factory {
     protected $model = Ledger::class;
 
-    public function definition(): array
-    {
+    public function definition(): array {
         return [
             'tenant_id' => $this->faker->word(),
             'name' => $this->faker->name(),

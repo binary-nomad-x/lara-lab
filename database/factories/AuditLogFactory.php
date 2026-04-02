@@ -6,12 +6,10 @@ use App\Models\AuditLog;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Carbon;
 
-class AuditLogFactory extends Factory
-{
+class AuditLogFactory extends Factory {
     protected $model = AuditLog::class;
 
-    public function definition(): array
-    {
+    public function definition(): array {
         return [
             'action' => $this->faker->randomElement(['CREATE', 'UPDATE', 'DELETE', 'LOGIN']),
             'table_name' => $this->faker->randomElement(['products', 'orders', 'users', 'variants']),

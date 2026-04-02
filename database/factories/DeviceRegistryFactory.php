@@ -6,12 +6,10 @@ use App\Models\DeviceRegistry;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Carbon;
 
-class DeviceRegistryFactory extends Factory
-{
+class DeviceRegistryFactory extends Factory {
     protected $model = DeviceRegistry::class;
 
-    public function definition(): array
-    {
+    public function definition(): array {
         return [
             'tenant_id' => $this->faker->word(),
             'user_id' => $this->faker->randomNumber(),

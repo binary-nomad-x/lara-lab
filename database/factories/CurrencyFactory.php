@@ -6,12 +6,10 @@ use App\Models\Currency;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Carbon;
 
-class CurrencyFactory extends Factory
-{
+class CurrencyFactory extends Factory {
     protected $model = Currency::class;
 
-    public function definition(): array
-    {
+    public function definition(): array {
         return [
             'code' => $this->faker->word(),
             'name' => $this->faker->name(),

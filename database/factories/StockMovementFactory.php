@@ -6,12 +6,10 @@ use App\Models\StockMovement;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Carbon;
 
-class StockMovementFactory extends Factory
-{
+class StockMovementFactory extends Factory {
     protected $model = StockMovement::class;
 
-    public function definition(): array
-    {
+    public function definition(): array {
         return [
             'tenant_id' => $this->faker->word(),
             'variant_id' => $this->faker->word(),
