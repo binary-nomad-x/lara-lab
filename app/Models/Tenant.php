@@ -3,11 +3,10 @@
 namespace App\Models;
 
 use App\Abstracts\BaseModel;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Tenant extends BaseModel {
-    use HasFactory, HasUuids;
+    use HasFactory;
 
     public function users(): \Illuminate\Database\Eloquent\Relations\HasMany|User {
         return $this->hasMany(User::class);

@@ -5,6 +5,6 @@ namespace App\Models;
 use App\Abstracts\BaseModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Ledger extends BaseModel {
+class Activity extends BaseModel {
     use HasFactory;
 }

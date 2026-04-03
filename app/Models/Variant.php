@@ -3,12 +3,12 @@
 namespace App\Models;
 
 use App\Abstracts\BaseModel;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Variant extends BaseModel {
-    use HasFactory, HasUuids;
+    use HasFactory;
 
     protected $guarded = ['id'];
 
@@ -20,15 +20,17 @@ class Variant extends BaseModel {
         return $this->belongsTo(Product::class, 'product_id', 'id');
     }
 
-    public function orderItems() {
+    public function orderItems(): \Illuminate\Database\Eloquent\Relations\HasMany|Variant {
         return $this->hasMany(OrderItem::class);
     }
 
-    public function getStockAttribute() {
-        return $this->stockMovements()->sum('quantity');
+    protected function stock(): Attribute {
+        return Attribute::get(
+            fn() => $this->stockMovements()->sum('quantity')
+        );
     }
 
-    public function stockMovements() {
+    public function stockMovements(): \Illuminate\Database\Eloquent\Relations\HasMany|Variant {
         return $this->hasMany(StockMovement::class);
     }
 }

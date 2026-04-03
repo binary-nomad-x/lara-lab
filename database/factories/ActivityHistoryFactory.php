@@ -2,11 +2,11 @@
 
 namespace Database\Factories;
 
-use App\Models\ActivityHistory;
+use App\Models\Activity;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ActivityHistoryFactory extends Factory {
-    protected $model = ActivityHistory::class;
+    protected $model = Activity::class;
 
     public function definition(): array {
         return [

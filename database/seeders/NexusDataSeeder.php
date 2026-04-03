@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Account;
-use App\Models\ActivityHistory;
+use App\Models\Activity;
 use App\Models\AuditLog;
 use App\Models\Batch;
 use App\Models\ConflictLog;
@@ -28,6 +28,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
 
 class NexusDataSeeder extends Seeder {
     public function run(): void {
@@ -107,7 +108,7 @@ class NexusDataSeeder extends Seeder {
         $this->seedSyncQueues($mainTenant, $faker);
 
         // 2.14 Activity History
-        $this->seedActivityHistory($mainTenant, $faker);
+        $this->seedActivity($mainTenant, $faker);
 
         // 2.15 Conflict Logs
         $this->seedConflictLogs($mainTenant, $faker);
@@ -483,7 +484,7 @@ class NexusDataSeeder extends Seeder {
         $this->command->newLine();
     }
 
-    private function seedActivityHistory($tenant, $faker): void {
+    private function seedActivity($tenant, $faker): void {
         $this->command->info("Seeding Activity History (1,000 records)");
         $count = 1000;
         $bar = $this->command->getOutput()->createProgressBar($count);
@@ -501,12 +502,12 @@ class NexusDataSeeder extends Seeder {
                 'updated_at' => now(),
             ];
             if (count($data) >= 100) {
-                ActivityHistory::insert($data);
+                Activity::insert($data);
                 $data = [];
                 $bar->advance(100);
             }
         }
-        ActivityHistory::insert($data);
+        Activity::insert($data);
         $bar->finish();
         $this->command->newLine();
     }

@@ -3,13 +3,12 @@
 namespace App\Models;
 
 use App\Abstracts\BaseModel;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Product extends BaseModel {
-    use HasFactory, HasUuids;
+    use HasFactory;
 
     public function variants(): HasMany {
         return $this->hasMany(Variant::class, 'product_id', 'id');

@@ -201,7 +201,7 @@ return new class extends Migration {
             $table->foreign('device_id')->references('device_id')->on('device_registries')->onDelete('cascade');
         });
 
-        Schema::create('activity_history', function (Blueprint $table) {
+        Schema::create('activities', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('tenant_id');
             $table->string('device_id');
@@ -257,7 +257,7 @@ return new class extends Migration {
             }
         });
         Schema::dropIfExists('tenants');
-        Schema::dropIfExists('activity_history');
+        Schema::dropIfExists('activities');
         Schema::dropIfExists('conflict_logs');
         Schema::dropIfExists('product_returns');
         Schema::dropIfExists('shipments');
