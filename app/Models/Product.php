@@ -19,7 +19,7 @@ class Product extends BaseModel {
         return $this->belongsTo(Tenant::class);
     }
 
-    public function orderItems() {
+    public function orderItems(): \Illuminate\Database\Eloquent\Relations\HasManyThrough|Product {
         return $this->hasManyThrough(OrderItem::class, Variant::class);
     }
 }

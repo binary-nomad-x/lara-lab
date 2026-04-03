@@ -6,9 +6,9 @@ use App\Abstracts\BaseModel;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class ReturnModel extends BaseModel {
+class ProductReturn extends BaseModel {
     use HasFactory, HasUuids;
 
-    protected $table = 'returns';
+    protected $table = 'product_returns';
 
 }

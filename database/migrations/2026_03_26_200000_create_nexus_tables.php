@@ -217,7 +217,7 @@ return new class extends Migration {
             $table->timestamps();
         });
 
-        Schema::create('returns', function (Blueprint $table) {
+        Schema::create('product_returns', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('tenant_id');
             $table->string('device_id');
@@ -259,7 +259,7 @@ return new class extends Migration {
         Schema::dropIfExists('tenants');
         Schema::dropIfExists('activity_history');
         Schema::dropIfExists('conflict_logs');
-        Schema::dropIfExists('returns');
+        Schema::dropIfExists('product_returns');
         Schema::dropIfExists('shipments');
     }
 };

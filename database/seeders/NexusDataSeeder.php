@@ -3,16 +3,27 @@
 namespace Database\Seeders;
 
 use App\Models\Account;
+use App\Models\ActivityHistory;
 use App\Models\AuditLog;
+use App\Models\Batch;
+use App\Models\ConflictLog;
+use App\Models\Currency;
+use App\Models\DeviceRegistry;
 use App\Models\Domain;
 use App\Models\JournalEntry;
 use App\Models\Ledger;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
+use App\Models\ProductReturn;
+use App\Models\Shipment;
+use App\Models\StockMovement;
+use App\Models\Subscription;
+use App\Models\SyncQueue;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Models\Variant;
+use Faker\Factory as Faker;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -20,8 +31,12 @@ use Illuminate\Support\Str;
 
 class NexusDataSeeder extends Seeder {
     public function run(): void {
+
         DB::disableQueryLog();
         $this->command->info("--- Nexus Intelligence Seeding System ---");
+
+        // Initialize Faker
+        $faker = Faker::create();
 
         // 1. Create Main Tenant
         $mainTenant = Tenant::create([
@@ -53,134 +68,225 @@ class NexusDataSeeder extends Seeder {
         // ---------------------------------------------------------
 
         // 2.1 Products
-        $this->command->info("Seeding Products (600 records)");
-        $countProducts = 600;
-        $barProducts = $this->command->getOutput()->createProgressBar($countProducts);
-        $barProducts->start();
+        $this->seedProducts($mainTenant, $faker);
 
-        $productIds = [];
-        $pData = [];
-        for ($i = 0; $i < $countProducts; $i++) {
-            $id = (string)Str::orderedUuid();
-            $productIds[] = $id;
-            $pData[] = [
-                'id' => $id,
-                'tenant_id' => $mainTenant->id,
-                'name' => 'Standard ' . fake()->company() . ' ' . $i,
+        // 2.2 Variants
+        $this->seedVariants($mainTenant, $faker);
+
+        // 2.3 Batches
+        $this->seedBatches($mainTenant, $faker);
+
+        // 2.4 Stock Movements
+        $this->seedStockMovements($mainTenant, $faker);
+
+        // 2.5 Orders
+        $this->seedOrders($mainTenant, $faker);
+
+        // 2.6 Order Items
+        $this->seedOrderItems($mainTenant, $faker);
+
+        // 2.7 Currencies
+        $this->seedCurrencies($mainTenant, $faker);
+
+        // 2.8 Accounts
+        $this->seedAccounts($mainTenant, $faker);
+
+        // 2.9 Ledgers
+        $this->seedLedgers($mainTenant, $faker);
+
+        // 2.10 Journal Entries
+        $this->seedJournalEntries($mainTenant, $faker);
+
+        // 2.11 Audit Logs
+        $this->seedAuditLogs($mainTenant, $faker);
+
+        // 2.12 Device Registries
+        $this->seedDeviceRegistries($mainTenant, $faker);
+
+        // 2.13 Sync Queues
+        $this->seedSyncQueues($mainTenant, $faker);
+
+        // 2.14 Activity History
+        $this->seedActivityHistory($mainTenant, $faker);
+
+        // 2.15 Conflict Logs
+        $this->seedConflictLogs($mainTenant, $faker);
+
+        // 2.16 Product Returns
+        $this->seedProductReturns($mainTenant, $faker);
+
+        // 2.17 Shipments
+        $this->seedShipments($mainTenant, $faker);
+
+        // 2.18 Subscriptions
+        $this->seedSubscriptions($mainTenant, $faker);
+
+        $this->command->info("Nexus Intelligent Data Seed Complete. Final record count > 15,000.");
+    }
+
+    private function seedProducts($tenant, $faker): void {
+        $this->command->info("Seeding Products (600 records)");
+        $count = 600;
+        $bar = $this->command->getOutput()->createProgressBar($count);
+        $bar->start();
+
+        $data = [];
+        for ($i = 0; $i < $count; $i++) {
+            $data[] = [
+                'id' => (string)Str::orderedUuid(),
+                'tenant_id' => $tenant->id,
+                'name' => 'Standard ' . $faker->company() . ' ' . $i,
                 'sku' => 'PRD-Bulk-' . $i . '-' . rand(100, 999),
-                'description' => fake()->paragraph(),
+                'description' => $faker->paragraph(),
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
-            if (count($pData) >= 100) {
-                Product::insert($pData);
-                $pData = [];
-                $barProducts->advance(100);
+            if (count($data) >= 100) {
+                Product::insert($data);
+                $data = [];
+                $bar->advance(100);
             }
         }
-        Product::insert($pData);
-        $barProducts->finish();
+        Product::insert($data);
+        $bar->finish();
         $this->command->newLine();
+    }
 
-        // 2.2 Variants
+    private function seedVariants($tenant, $faker): void {
         $this->command->info("Seeding Variants (2,500 records)");
-        $countVariants = 2500;
-        $barVariants = $this->command->getOutput()->createProgressBar($countVariants);
-        $barVariants->start();
+        $count = 2500;
+        $bar = $this->command->getOutput()->createProgressBar($count);
+        $bar->start();
 
-        $variantIds = [];
-        $vData = [];
-        for ($i = 0; $i < $countVariants; $i++) {
-            $id = (string)Str::orderedUuid();
-            $variantIds[] = $id;
-            $vData[] = [
-                'id' => $id,
-                'tenant_id' => $mainTenant->id,
+        $productIds = Product::pluck('id')->toArray();
+        $data = [];
+        for ($i = 0; $i < $count; $i++) {
+            $data[] = [
+                'id' => (string)Str::orderedUuid(),
+                'tenant_id' => $tenant->id,
                 'product_id' => $productIds[array_rand($productIds)],
-                'name' => 'Bulk ' . fake()->word(),
+                'name' => 'Bulk ' . $faker->word(),
                 'sku' => 'SKU-Bulk-' . $i . '-' . rand(100, 999),
                 'price' => rand(10, 1000),
                 'cost' => rand(5, 500),
                 'stock' => rand(0, 1000),
-                'attributes' => json_encode(['Color' => fake()->safeColorName, 'Size' => 'L']),
+                'attributes' => json_encode(['Color' => $faker->safeColorName(), 'Size' => 'L']),
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
-            if (count($vData) >= 200) {
-                Variant::insert($vData);
-                $vData = [];
-                $barVariants->advance(200);
+            if (count($data) >= 200) {
+                Variant::insert($data);
+                $data = [];
+                $bar->advance(200);
             }
         }
-        Variant::insert($vData);
-        $barVariants->finish();
+        Variant::insert($data);
+        $bar->finish();
         $this->command->newLine();
+    }
 
-        // 2.3 Financial Setup
-        $this->command->info("Setting up Accounts and Ledger");
-        $ledger = Ledger::create([
-            'id' => (string)Str::orderedUuid(),
-            'tenant_id' => $mainTenant->id,
-            'name' => 'Nexus Operating Ledger',
-            'is_active' => true,
-        ]);
+    private function seedBatches($tenant, $faker): void {
+        $this->command->info("Seeding Batches (1,000 records)");
+        $count = 1000;
+        $bar = $this->command->getOutput()->createProgressBar($count);
+        $bar->start();
 
-        $accs = [];
-        $types = ['Asset', 'Liability', 'Equity', 'Revenue', 'Expense'];
-        foreach (range(1, 100) as $i) {
-            $accs[] = Account::create([
+        $variantIds = Variant::pluck('id')->toArray();
+        $data = [];
+        for ($i = 0; $i < $count; $i++) {
+            $data[] = [
                 'id' => (string)Str::orderedUuid(),
-                'tenant_id' => $mainTenant->id,
-                'name' => 'Bulk Account ' . $i,
-                'code' => 'ACC-' . $i,
-                'type' => $types[array_rand($types)],
-            ]);
+                'tenant_id' => $tenant->id,
+                'variant_id' => $variantIds[array_rand($variantIds)],
+                'batch_number' => 'BATCH-' . $i . '-' . rand(100, 999),
+                'expiry_date' => $faker->optional(0.7)->dateTimeBetween('+1 month', '+2 years'),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+            if (count($data) >= 100) {
+                Batch::insert($data);
+                $data = [];
+                $bar->advance(100);
+            }
         }
+        Batch::insert($data);
+        $bar->finish();
+        $this->command->newLine();
+    }
 
-        // 2.4 Orders
+    private function seedStockMovements($tenant, $faker): void {
+        $this->command->info("Seeding Stock Movements (5,000 records)");
+        $count = 5000;
+        $bar = $this->command->getOutput()->createProgressBar($count);
+        $bar->start();
+
+        $variantIds = Variant::pluck('id')->toArray();
+        $data = [];
+        for ($i = 0; $i < $count; $i++) {
+            $data[] = [
+                'id' => (string)Str::orderedUuid(),
+                'tenant_id' => $tenant->id,
+                'variant_id' => $variantIds[array_rand($variantIds)],
+                'quantity' => rand(-100, 100), // Negative for out, positive for in
+                'type' => $faker->randomElement(['purchase', 'sale', 'adjustment', 'return']),
+                'reference_id' => $faker->optional(0.8)->uuid(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+            if (count($data) >= 500) {
+                StockMovement::insert($data);
+                $data = [];
+                $bar->advance(500);
+            }
+        }
+        StockMovement::insert($data);
+        $bar->finish();
+        $this->command->newLine();
+    }
+
+    private function seedOrders($tenant, $faker): void {
         $this->command->info("Seeding Orders (1,000 records)");
-        $countOrders = 1000;
-        $barOrders = $this->command->getOutput()->createProgressBar($countOrders);
-        $barOrders->start();
+        $count = 1000;
+        $bar = $this->command->getOutput()->createProgressBar($count);
+        $bar->start();
 
-        $orderIds = [];
-        $orderData = [];
-        for ($i = 0; $i < $countOrders; $i++) {
-            $id = (string)Str::orderedUuid();
-            $orderIds[] = $id;
-            $orderData[] = [
-                'id' => $id,
-                'tenant_id' => $mainTenant->id,
-                'status' => fake()->randomElement(['Draft', 'Confirmed', 'Completed', 'Processing']),
+        $data = [];
+        for ($i = 0; $i < $count; $i++) {
+            $data[] = [
+                'id' => (string)Str::orderedUuid(),
+                'tenant_id' => $tenant->id,
+                'status' => $faker->randomElement(['Draft', 'Confirmed', 'Completed', 'Processing']),
                 'total_amount' => rand(100, 10000),
                 'currency_code' => 'USD',
-                'notes' => fake()->sentence(),
+                'notes' => $faker->sentence(),
                 'created_at' => now()->subDays(rand(1, 300)),
                 'updated_at' => now(),
             ];
-            if (count($orderData) >= 100) {
-                Order::insert($orderData);
-                $orderData = [];
-                $barOrders->advance(100);
+            if (count($data) >= 100) {
+                Order::insert($data);
+                $data = [];
+                $bar->advance(100);
             }
         }
-        Order::insert($orderData);
-        $barOrders->finish();
+        Order::insert($data);
+        $bar->finish();
         $this->command->newLine();
+    }
 
-        // 2.5 Order Items & Financial Distribution
-        $this->command->info("Seeding Order Items and Ledger entries (5,000+ records)");
-        $countItems = 4000;
-        $barItems = $this->command->getOutput()->createProgressBar($countItems);
-        $barItems->start();
+    private function seedOrderItems($tenant, $faker): void {
+        $this->command->info("Seeding Order Items (4,000 records)");
+        $count = 4000;
+        $bar = $this->command->getOutput()->createProgressBar($count);
+        $bar->start();
 
-        $itemsData = [];
-        $journalData = [];
-        for ($i = 0; $i < $countItems; $i++) {
+        $orderIds = Order::pluck('id')->toArray();
+        $variantIds = Variant::pluck('id')->toArray();
+        $data = [];
+        for ($i = 0; $i < $count; $i++) {
             $lineTotal = rand(50, 2000);
-            $itemsData[] = [
+            $data[] = [
                 'id' => (string)Str::orderedUuid(),
-                'tenant_id' => $mainTenant->id,
+                'tenant_id' => $tenant->id,
                 'order_id' => $orderIds[array_rand($orderIds)],
                 'variant_id' => $variantIds[array_rand($variantIds)],
                 'quantity' => rand(1, 5),
@@ -189,36 +295,322 @@ class NexusDataSeeder extends Seeder {
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
+            if (count($data) >= 500) {
+                OrderItem::insert($data);
+                $data = [];
+                $bar->advance(500);
+            }
+        }
+        OrderItem::insert($data);
+        $bar->finish();
+        $this->command->newLine();
+    }
 
-            // Journal Entry chunk (Debit)
-            $journalData[] = [
+    private function seedCurrencies($tenant, $faker): void {
+        $this->command->info("Seeding Currencies (5 records)");
+        $currencies = ['USD', 'EUR', 'GBP', 'JPY', 'INR'];
+        foreach ($currencies as $code) {
+            Currency::create([
                 'id' => (string)Str::orderedUuid(),
-                'tenant_id' => $mainTenant->id,
-                'ledger_id' => $ledger->id,
-                'account_id' => $accs[array_rand($accs)]->id,
-                'debit' => $lineTotal,
-                'credit' => 0,
+                'code' => $code,
+                'name' => $faker->currencyCode(),
+                'exchange_rate' => rand(0.5, 2.5),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+        $this->command->newLine();
+    }
+
+    private function seedAccounts($tenant, $faker): void {
+        $this->command->info("Seeding Accounts (100 records)");
+        $types = ['Asset', 'Liability', 'Equity', 'Revenue', 'Expense'];
+        $data = [];
+        for ($i = 0; $i < 100; $i++) {
+            $data[] = [
+                'id' => (string)Str::orderedUuid(),
+                'tenant_id' => $tenant->id,
+                'name' => 'Bulk Account ' . $i,
+                'code' => 'ACC-' . $i,
+                'type' => $types[array_rand($types)],
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }
+        Account::insert($data);
+        $this->command->newLine();
+    }
+
+    private function seedLedgers($tenant, $faker): void {
+        $this->command->info("Seeding Ledgers (5 records)");
+        $ledgers = ['Operating Ledger', 'Sales Ledger', 'Purchase Ledger', 'General Ledger', 'Tax Ledger'];
+        foreach ($ledgers as $ledger) {
+            Ledger::create([
+                'id' => (string)Str::orderedUuid(),
+                'tenant_id' => $tenant->id,
+                'name' => $ledger,
+                'is_active' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+        $this->command->newLine();
+    }
+
+    private function seedJournalEntries($tenant, $faker): void {
+        $this->command->info("Seeding Journal Entries (5,000 records)");
+        $count = 5000;
+        $bar = $this->command->getOutput()->createProgressBar($count);
+        $bar->start();
+
+        $accountIds = Account::pluck('id')->toArray();
+        $ledgerIds = Ledger::pluck('id')->toArray();
+        $data = [];
+        for ($i = 0; $i < $count; $i++) {
+            $amount = rand(10, 1000);
+            $data[] = [
+                'id' => (string)Str::orderedUuid(),
+                'tenant_id' => $tenant->id,
+                'ledger_id' => $ledgerIds[array_rand($ledgerIds)],
+                'account_id' => $accountIds[array_rand($accountIds)],
+                'debit' => $faker->boolean() ? $amount : 0,
+                'credit' => $faker->boolean() ? $amount : 0,
                 'description' => 'System Bulk Entry ' . $i,
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
-
-            if (count($itemsData) >= 500) {
-                OrderItem::insert($itemsData);
-                JournalEntry::insert($journalData);
-                $itemsData = [];
-                $journalData = [];
-                $barItems->advance(500);
+            if (count($data) >= 500) {
+                JournalEntry::insert($data);
+                $data = [];
+                $bar->advance(500);
             }
         }
-        OrderItem::insert($itemsData);
-        JournalEntry::insert($journalData);
-        $barItems->finish();
+        JournalEntry::insert($data);
+        $bar->finish();
         $this->command->newLine();
+    }
 
+    private function seedAuditLogs($tenant, $faker): void {
         $this->command->info("Seeding Audit Logs (1,000 records)");
-        AuditLog::factory()->count(1000)->create(['tenant_id' => $mainTenant->id]);
+        $count = 1000;
+        $bar = $this->command->getOutput()->createProgressBar($count);
+        $bar->start();
 
-        $this->command->info("Nexus Intelligent Data Seed Complete. Final record count > 15,000.");
+        $userIds = User::pluck('id')->toArray();
+        $data = [];
+        for ($i = 0; $i < $count; $i++) {
+            $data[] = [
+                'id' => (string)Str::orderedUuid(),
+                'tenant_id' => $tenant->id,
+                'user_id' => $userIds[array_rand($userIds)] ?? null,
+                'action' => $faker->randomElement(['create', 'update', 'delete']),
+                'table_name' => $faker->randomElement(['users', 'products', 'orders', 'variants']),
+                'payload_before' => json_encode(['key' => 'value']),
+                'payload_after' => json_encode(['key' => 'new_value']),
+                'ip_address' => $faker->ipv4(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+            if (count($data) >= 100) {
+                AuditLog::insert($data);
+                $data = [];
+                $bar->advance(100);
+            }
+        }
+        AuditLog::insert($data);
+        $bar->finish();
+        $this->command->newLine();
+    }
+
+    private function seedDeviceRegistries($tenant, $faker): void {
+        $this->command->info("Seeding Device Registries (100 records)");
+        $count = 100;
+        $bar = $this->command->getOutput()->createProgressBar($count);
+        $bar->start();
+
+        $userIds = User::pluck('id')->toArray();
+        $data = [];
+        for ($i = 0; $i < $count; $i++) {
+            $data[] = [
+                'id' => (string)Str::orderedUuid(),
+                'tenant_id' => $tenant->id,
+                'user_id' => $userIds[array_rand($userIds)] ?? null,
+                'device_id' => 'DEVICE-' . $i . '-' . rand(100, 999),
+                'device_name' => $faker->word(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+
+            if (count($data) >= 20) {
+                DeviceRegistry::insert($data);
+                $data = [];
+                $bar->advance(20);
+            }
+        }
+        DeviceRegistry::insert($data);
+        $bar->finish();
+        $this->command->newLine();
+    }
+
+    private function seedSyncQueues($tenant, $faker): void {
+        $this->command->info("Seeding Sync Queues (1,000 records)");
+        $count = 1000;
+        $bar = $this->command->getOutput()->createProgressBar($count);
+        $bar->start();
+
+        $deviceIds = DeviceRegistry::pluck('device_id')->toArray();
+        $data = [];
+        for ($i = 0; $i < $count; $i++) {
+            $data[] = [
+                'id' => (string)Str::orderedUuid(),
+                'tenant_id' => $tenant->id,
+                'device_id' => $deviceIds[array_rand($deviceIds)],
+                'entity' => $faker->randomElement(['product', 'order', 'variant']),
+                'action' => $faker->randomElement(['create', 'update', 'delete']),
+                'payload' => json_encode(['key' => 'value']),
+                'synced_at' => $faker->optional(0.7)->dateTimeThisYear(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+            if (count($data) >= 100) {
+                SyncQueue::insert($data);
+                $data = [];
+                $bar->advance(100);
+            }
+        }
+        SyncQueue::insert($data);
+        $bar->finish();
+        $this->command->newLine();
+    }
+
+    private function seedActivityHistory($tenant, $faker): void {
+        $this->command->info("Seeding Activity History (1,000 records)");
+        $count = 1000;
+        $bar = $this->command->getOutput()->createProgressBar($count);
+        $bar->start();
+
+        $deviceIds = DeviceRegistry::pluck('device_id')->toArray();
+        $data = [];
+        for ($i = 0; $i < $count; $i++) {
+            $data[] = [
+                'id' => (string)Str::orderedUuid(),
+                'tenant_id' => $tenant->id,
+                'device_id' => $deviceIds[array_rand($deviceIds)],
+                'data' => json_encode(['activity' => $faker->sentence()]),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+            if (count($data) >= 100) {
+                ActivityHistory::insert($data);
+                $data = [];
+                $bar->advance(100);
+            }
+        }
+        ActivityHistory::insert($data);
+        $bar->finish();
+        $this->command->newLine();
+    }
+
+    private function seedConflictLogs($tenant, $faker): void {
+        $this->command->info("Seeding Conflict Logs (500 records)");
+        $count = 500;
+        $bar = $this->command->getOutput()->createProgressBar($count);
+        $bar->start();
+
+        $deviceIds = DeviceRegistry::pluck('device_id')->toArray();
+        $data = [];
+        for ($i = 0; $i < $count; $i++) {
+            $data[] = [
+                'id' => (string)Str::orderedUuid(),
+                'tenant_id' => $tenant->id,
+                'device_id' => $deviceIds[array_rand($deviceIds)],
+                'data' => json_encode(['conflict' => $faker->sentence()]),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+            if (count($data) >= 50) {
+                ConflictLog::insert($data);
+                $data = [];
+                $bar->advance(50);
+            }
+        }
+        ConflictLog::insert($data);
+        $bar->finish();
+        $this->command->newLine();
+    }
+
+    private function seedProductReturns($tenant, $faker): void {
+        $this->command->info("Seeding Product Returns (500 records)");
+        $count = 500;
+        $bar = $this->command->getOutput()->createProgressBar($count);
+        $bar->start();
+
+        $deviceIds = DeviceRegistry::pluck('device_id')->toArray();
+        $data = [];
+        for ($i = 0; $i < $count; $i++) {
+            $data[] = [
+                'id' => (string)Str::orderedUuid(),
+                'tenant_id' => $tenant->id,
+                'device_id' => $deviceIds[array_rand($deviceIds)],
+                'data' => json_encode(['return_reason' => $faker->sentence()]),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+
+            if (count($data) >= 50) {
+                ProductReturn::insert($data);
+                $data = [];
+                $bar->advance(50);
+            }
+        }
+
+        ProductReturn::insert($data);
+        $bar->finish();
+        $this->command->newLine();
+    }
+
+    private function seedShipments($tenant, $faker): void {
+        $this->command->info("Seeding Shipments (500 records)");
+        $count = 500;
+        $bar = $this->command->getOutput()->createProgressBar($count);
+        $bar->start();
+
+        $deviceIds = DeviceRegistry::pluck('device_id')->toArray();
+        $data = [];
+        for ($i = 0; $i < $count; $i++) {
+            $data[] = [
+                'id' => (string)Str::orderedUuid(),
+                'tenant_id' => $tenant->id,
+                'device_id' => $deviceIds[array_rand($deviceIds)],
+                'data' => json_encode(['shipment_status' => $faker->randomElement(['pending', 'shipped', 'delivered'])]),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+            if (count($data) >= 50) {
+                Shipment::insert($data);
+                $data = [];
+                $bar->advance(50);
+            }
+        }
+        Shipment::insert($data);
+        $bar->finish();
+        $this->command->newLine();
+    }
+
+    private function seedSubscriptions($tenant, $faker): void {
+        $this->command->info("Seeding Subscriptions (5 records)");
+        $plans = ['Basic', 'Pro', 'Enterprise', 'Premium', 'Free Trial'];
+        foreach ($plans as $plan) {
+            Subscription::create([
+                'id' => (string)Str::orderedUuid(),
+                'tenant_id' => $tenant->id,
+                'plan_name' => $plan,
+                'trial_ends_at' => $faker->optional(0.7)->dateTimeBetween('+1 week', '+1 month'),
+                'ends_at' => $faker->optional(0.5)->dateTimeBetween('+3 months', '+1 year'),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+        $this->command->newLine();
     }
 }
