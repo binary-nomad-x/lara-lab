@@ -62,7 +62,7 @@ class NexusDataSeeder extends Seeder {
             'name' => 'System Administrator',
             'email' => 'admin@nexus.com',
             'password' => Hash::make('password'),
-        ])->assignRole('Owner');
+        ])->assignRole(Role::firstOrCreate(['name' => 'Owner', 'guard_name' => 'web']));
 
         // ---------------------------------------------------------
         // 2. High-Performance Bulk Seeding (Main Tenant)
